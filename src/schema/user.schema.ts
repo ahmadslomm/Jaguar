@@ -4,15 +4,15 @@ import { TUserModel } from '../utils/Types';
 
 const userSchema = new Schema<TUserModel>(
     {
-        phone : {
-            type : String,
-            required: true
-        },
-        email : {
-            type : String
-        },
-       name : {
+       firstName: {
+        type : String,
+       },
+       lastName : {
         type : String
+       },
+       telegramId : {
+        type : String,
+        required: true
        }
     },
     {

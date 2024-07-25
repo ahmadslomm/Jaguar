@@ -5,7 +5,6 @@ import { HttpStatusCodes as Code } from '../../utils/Enum';
 
 export const register = async (req:Request) => {
     try {
-        console.log("Getting bosy ", req.body)
         const {email, phone, name} = req.body;
     
         const user = await User.findOneAndUpdate({phone}, {$set : {email, phone, name}}, { upsert : true, new : true});
