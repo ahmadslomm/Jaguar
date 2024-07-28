@@ -1,4 +1,5 @@
 import { Request, Response  } from 'express';
+import { AuthRequest } from '../../middleware/authentication/jsonToken';
 import { HttpStatusCodes as Code } from '../../utils/Enum';
 import { GenResObj } from '../../utils/ResponseFormat';
 import UserTokenInfo from '../../schema/userTokenInfo.schema';
@@ -7,11 +8,10 @@ import MultiTapLevel from '../../schema/multiTapLevel.schema';
 import EnergyTankLevel from '../../schema/energyTankLevel.schema';
 import EnergyChargingLevel from '../../schema/energyChargingLevel.schema';
 import { Types } from 'mongoose';
-import { TUserModel } from '../../utils/Types';
 
-export const getBoosterInfo = async(req:Request) => {
+export const getBoosterInfo = async(req:AuthRequest) => {
     try {
-        const { telegramId } = req.query;
+        const { telegramId } = req;
 
         const checkAvlUser : any = await User.findOne({ telegramId });
 
@@ -37,7 +37,6 @@ export const getBoosterInfo = async(req:Request) => {
             avlNextMultiTapLevel : checkAvlNextAvlMultitapLevel,
             avlNextEnergyTankLevel : checkAvlNextAvlEnergyTankLevel,
             avlNextEnergyChargingLevel : checkAvlNextAvlEnergyChargingLevel
-
         }
 
         return GenResObj(Code.OK, true, "Boost info fetched successfully.", resObj)
@@ -52,9 +51,9 @@ export const getBoosterInfo = async(req:Request) => {
     }
 };
 
-export const updateDailyBooster = async (req: Request) => {
+export const updateDailyBooster = async (req: AuthRequest) => {
     try {
-        const { telegramId } = req.query;
+        const { telegramId } = req;
         const { boosterType } = req.body;
 
         const checkAvlUser : any = await User.findOne({ telegramId });
@@ -75,6 +74,44 @@ export const updateDailyBooster = async (req: Request) => {
           "Internal server error",
           null
         ); 
+    }
+};
+
+export const updatelevel = async (req: AuthRequest) => {
+    try {
+        const { telegramId } = req;
+        const { boosterType } = req.body;
+
+        const checkAvlUser : any = await User.findOne({ telegramId });
+
+        const checkAvlUserTokenInfo:any = await UserTokenInfo.findOne({ userId : new Types.ObjectId(checkAvlUser?._id)});
+
+        const collectionType:any = boosterType == 'multiTapLevel' ? MultiTapLevel : boosterType == 'energyTankLevel' ? EnergyTankLevel : EnergyChargingLevel;
+
+        const checkAvlLevelNameInfUserTokenInfo:any = boosterType == 'multiTapLevel' ? checkAvlUserTokenInfo?.multiTapLevel : boosterType == 'energyTankLevel' ? checkAvlUserTokenInfo?.energyTankLevel : checkAvlUserTokenInfo?.energyChargingLevel;
+        
+        const updatedNextLevelName = "LEVEL-" + (parseInt(checkAvlLevelNameInfUserTokenInfo?.split('-')[1]) + 1);
+        
+        const checkAvlNextLevelInfo:any = await collectionType.findOne({ levelName : updatedNextLevelName});
+        
+        if(checkAvlNextLevelInfo.amount <= checkAvlUserTokenInfo.currentBalance ) {
+            const udpatedCurrenetBalance = checkAvlUserTokenInfo.currentBalance - checkAvlNextLevelInfo.amount;
+
+            const updateUserTokenInfo:any = await UserTokenInfo.findOneAndUpdate({ userId : new Types.ObjectId(checkAvlUser?._id) }, { $set : { [boosterType] : updatedNextLevelName, currentBalance : udpatedCurrenetBalance} }, { new : true });
+
+            return GenResObj(Code.OK, true, "Level updated successfully", updateUserTokenInfo)
+        }else {
+            return GenResObj(Code.NOT_FOUND, false, "Insufficient balance.", null);
+        }
+        return GenResObj(Code.NOT_FOUND, false, "Something went wrong", null);
+    } catch (error) {
+        console.log("Getting error for updating booster :", error);
+        return GenResObj(
+          Code.INTERNAL_SERVER,
+          false,
+          "Internal server error",
+          null
+        );
     }
 }
 

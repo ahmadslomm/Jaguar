@@ -5,8 +5,9 @@ import UserTokenInfo from "../schema/userTokenInfo.schema";
 import MultiTapLevel from "../schema/multiTapLevel.schema";
 import EnergyTankLevel from "../schema/energyTankLevel.schema";
 import EnergyChargingLevel from "../schema/energyChargingLevel.schema";
+import jwt from 'jsonwebtoken';
 import { TTelegramUserInfo, TUserModel } from "../utils/Types";
-import { Types } from "mongoose";
+import { ObjectId, Types } from "mongoose";
 
 // ******************* Register User For Server-side Bot Request******************* //
 

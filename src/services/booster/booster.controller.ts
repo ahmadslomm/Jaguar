@@ -14,5 +14,11 @@ export const BoosterController = {
         const { code, data } : TResponse = await BoosterProvider.updateDailyBooster(req);
         res.status(code).json(data);
         return;
-    }
+    },
+
+    updatelevel : async(req: Request, res: Response) => {
+        const { code, data } : TResponse = await BoosterProvider.updatelevel(req);
+        res.status(code).json(data);
+        return;
+    },
 }

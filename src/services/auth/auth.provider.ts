@@ -4,6 +4,7 @@ import { GenResObj } from "../../utils/ResponseFormat";
 import { HttpStatusCodes as Code } from "../../utils/Enum";
 import LevelInfo from "../../schema/levelInfo.schema";
 import { createUser } from "../../helper/function";
+import { createJsonWebToken } from "../../middleware/authentication/createToken";
 
 export const register = async (req: Request) => {
   try {
@@ -13,9 +14,11 @@ export const register = async (req: Request) => {
 
     if (!checkAvlUser) {
         await createUser(payload)
-    }
+    };
 
-    return GenResObj(Code.CREATED, true, "User registration checked successfully", null);
+    const jsonToken = await createJsonWebToken({userId : checkAvlUser?._id,telegrameId : payload?.telegramId })
+
+    return GenResObj(Code.CREATED, true, "User registration checked successfully", jsonToken);
   } catch (error) {
     console.log("Getting error for  checking the user's registration :", error);
     return GenResObj(
@@ -29,6 +32,7 @@ export const register = async (req: Request) => {
 
 export const getUserRegistration = async (req: Request) => {
   try {
+
     const userData = await User.find({});
 
     return GenResObj(

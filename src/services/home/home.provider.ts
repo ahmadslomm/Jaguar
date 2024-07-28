@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { AuthRequest }  from './../../middleware/authentication/jsonToken';
 import User from "../../schema/user.schema";
 import LevelInfo from "../../schema/levelInfo.schema";
 import StatusInfo from "../../schema/statusInfo.schema";
@@ -8,9 +9,9 @@ import { GenResObj } from '../../utils/ResponseFormat';
 import { calculateEnergyTankBalance } from "../../helper/function";
 import { Types } from "mongoose";
 
-export const getUserTokenInfo = async(req: Request) => {
+export const getUserTokenInfo = async(req: AuthRequest) => {
     try {
-        const { telegramId } = req.query;
+        const { telegramId } = req;
         // console.log("Getting the telegrame ID of : ", telegramId)
         const user :any= await User.findOne({ telegramId });
 
@@ -29,9 +30,9 @@ export const getUserTokenInfo = async(req: Request) => {
     }
 };
 
-export const addTokenbalance = async (req: Request) => {
+export const addTokenbalance = async (req: AuthRequest) => {
     try {
-        const { telegramId } = req.query;
+        const { telegramId } = req;
         const { token } = req.body;
 
         const user :any= await User.findOne({ telegramId });
