@@ -13,7 +13,7 @@ const userSchema = new Schema<TUserModel>(
        telegramId : {
         type : String,
         required: true
-       }
+       },
     },
     {
         timestamps: true

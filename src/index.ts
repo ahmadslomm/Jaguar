@@ -20,7 +20,7 @@ if(token) {
         // ctx.reply('Welcome to the Telegram Bot!');
         const checkuserRegistrationStatus: boolean = await registerUser(ctx.update.message.from);
      
-        checkuserRegistrationStatus && (ctx.replyWithMarkdownV2(`*Hey, ${ctx.update.message.from.first_name} ${ctx.update.message.from.last_name} Welcome to the telegram bot*`,{
+        checkuserRegistrationStatus && (ctx.replyWithMarkdownV2(`*Hey ${ctx.update.message.from.first_name} ${ctx.update.message.from.last_name} Welcome to the telegram bot*`,{
             reply_markup: {
                 inline_keyboard: [
                     [{text: 'Click me', web_app: { url : URL}}]
