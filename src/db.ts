@@ -16,6 +16,8 @@ if (!process.env.MYSQL_USER || !process.env.MYSQL_HOST || !process.env.MYSQL_PAS
     process.exit(1);
 };
 
+//********** PRODUCTION DB CONNECTION ********** //
+
 export const sequelize = new Sequelize({
     database: process.env.MYSQL_DATABASE,
     dialect: 'sqlite',
@@ -25,6 +27,17 @@ export const sequelize = new Sequelize({
     models: [User, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
     logging: false, // Disable logging; set to console.log to see SQL queries
 });
+
+//********** LOCAL DB CONNECTION ********** //
+// export const sequelize = new Sequelize({
+//     database: process.env.LOCAL_MYSQL_DATABASE,
+//     dialect: 'mysql',
+//     username: process.env.LOCAL_MYSQL_USER,
+//     password: process.env.LOCAL_MYSQL_PASSWORD,
+//     host: process.env.LOCAL_MYSQL_HOST,
+//     models: [User, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
+//     logging: false, // Disable logging; set to console.log to see SQL queries
+// });
 
 
 

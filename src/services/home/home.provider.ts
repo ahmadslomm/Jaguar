@@ -38,12 +38,14 @@ export const addTokenbalance = async (req: AuthRequest) => {
         // console.log("object")
         const user :any= await User.findOne({where :{ telegramId }});
         const userTokenInfo = await UserTokenInfo.findOne({where :{ userId : user?.id }});
-
+        const currentTime = new Date();
         if(userTokenInfo) {
             await userTokenInfo.update(
                 {
                     currentBalance: literal(`currentBalance + ${token}`),
-                    turnOverBalance: literal(`turnOverBalance + ${token}`)
+                    turnOverBalance: literal(`turnOverBalance + ${token}`),
+                    currentTankBalance: literal(`currentTankBalance - ${token}`),
+                    tankUpdateTime: currentTime
                 },
                 { where: { userId : user?.id } }
             )
@@ -51,7 +53,7 @@ export const addTokenbalance = async (req: AuthRequest) => {
             return GenResObj(Code.OK, true, "Token balance added successfully.", updateUserTokenInfo)
         }
         // const updateUserTokenInfo = await UserTokenInfo.findOneAndUpdate({ userId : new Types.ObjectId(user?._id) }, { $inc : { currentBalance : token, turnOverBalance: token}}, { new : true});
-        return GenResObj(Code.NOT_FOUND, false, "SOmething went wrong.", null )
+        return GenResObj(Code.NOT_FOUND, false, "Something went wrong.", null )
     } catch (error) {
         console.log("Getting error for adding token balance :", error);
         return GenResObj(Code.INTERNAL_SERVER, false, "Internal server error", null);
