@@ -22,7 +22,7 @@ export const getUserTokenInfo = async(req: AuthRequest) => {
 
         const userTokenInfo = await UserTokenInfo.findOne({where :{ userId : user?.id }});
 
-        console.log("Getting the user token info : ", userTokenInfo)
+        // console.log("Getting the user token info : ", userTokenInfo)
         return GenResObj(Code.OK, true, "User token info fetched successfully.", userTokenInfo)
 
     } catch (error) {

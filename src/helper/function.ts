@@ -124,6 +124,7 @@ export const calculateEnergyTankBalance = async (
       lastUpdateDate !== currentDate &&
         (updateFiled["dailyTappingBoosters"] = 7);
 
+
      //check to update the current balance
       if (
         userTokenInfo?.totalTankCapacity > userTokenInfo?.currentTankBalance
@@ -142,8 +143,7 @@ export const calculateEnergyTankBalance = async (
             ? userTokenInfo?.totalTankCapacity
             : tankBalanceToAdd;
 
-        // updateFiled = { currentTankBalance: updatedTankBalance };
-        // updateFiled["currentTankBalance"] = updatedTankBalance;
+        updateFiled["currentTankBalance"] = updatedTankBalance;
       }
 
       // console.log("3333333", updatedTankBalance)
