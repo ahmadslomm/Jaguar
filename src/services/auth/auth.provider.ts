@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import User from "../../schema/user.schema";
+import {User} from "../../schema/user.schema";
 import { GenResObj } from "../../utils/ResponseFormat";
 import { HttpStatusCodes as Code } from "../../utils/Enum";
 import LevelInfo from "../../schema/levelInfo.schema";
@@ -10,13 +10,13 @@ export const register = async (req: Request) => {
   try {
     const payload = req.body;
 
-    let checkAvlUser = await User.findOne({ telegramId: payload?.telegramId });
+    let checkAvlUser = await User.findOne({ where: { telegramId: payload?.telegramId } });
 
     if (!checkAvlUser) {
         await createUser(payload)
     };
 
-    const jsonToken = await createJsonWebToken({userId : checkAvlUser?._id,telegrameId : payload?.telegramId })
+    const jsonToken = await createJsonWebToken({userId : checkAvlUser?.id,telegramId : payload?.telegramId })
 
     return GenResObj(Code.CREATED, true, "User registration checked successfully", jsonToken);
   } catch (error) {
@@ -33,7 +33,7 @@ export const register = async (req: Request) => {
 export const getUserRegistration = async (req: Request) => {
   try {
 
-    const userData = await User.find({});
+    const userData = await User.findAll();
 
     return GenResObj(
       Code.CREATED,

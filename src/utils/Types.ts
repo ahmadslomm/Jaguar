@@ -16,9 +16,10 @@ export type TResponse = {
 
 // *********** User Model *********** //
 export type TUser = {
-    firstName:string;
-    lastName : string;
-    telegramId : string;
+    id?: number | string;
+    firstName?: string;
+    lastName?: string;
+    telegramId?: string | undefined;  
 };
 
 export type TUserModel = TUser & Document & SchemaTimestampsConfig;
@@ -44,17 +45,18 @@ export type TLevelInfoModel = TLevelInfo & Document & SchemaTimestampsConfig ;
 
 //*********** Status Info *********** //
 export type TStatusInfo = {
-    status : String;
-    minRequired : number;
-    maxRequired : number;
-    reward : number;
+    id?: string;
+    status? : string;
+    minRequired? : number;
+    maxRequired? : number;
+    reward? : number;
 }
 
 export type TStatusInfoModel = TStatusInfo & Document & SchemaTimestampsConfig;
 
 //*********** User token Info *********** //
 export type TUserTokenInfo = {
-    userId : ObjectId;
+    userId : string;
     turnOverBalance: number;
     currentBalance: number;
     totalTankCapacity: number;
@@ -63,7 +65,7 @@ export type TUserTokenInfo = {
     multiTapLevel : string;
     energyTankLevel : string;
     energyChargingLevel : string;
-    statusId : ObjectId;
+    statusId : string;
     tankUpdateTime: Date;
     lastRewardDate: Date;
     lastRewardAmount: number;
@@ -76,10 +78,11 @@ export type TUserTokenInfoModel = TUserTokenInfo & Document & SchemaTimestampsCo
 
 // *********** Multi Tap  Level*********** //
 export type TMultiTapLevel = {
-    level: number;
-    levelName: string;
-    tap: number;
-    amount: number;
+    id?: number | string;
+    level?: number;
+    levelName?: string;
+    tap?: number;
+    amount?: number;
 };
 
 export type TMultiTapLevelModel = TMultiTapLevel & Document & SchemaTimestampsConfig ;

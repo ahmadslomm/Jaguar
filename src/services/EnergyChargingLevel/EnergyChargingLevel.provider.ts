@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { TLevelInfoModel } from "../../utils/Types";
 import LevelInfo from "../../schema/levelInfo.schema";
-import EnergyChargingLevel from '../../schema/energyChargingLevel.schema';
+import {EnergyChargingLevel} from '../../schema/energyChargingLevel.schema';
 import { GenResObj } from "../../utils/ResponseFormat";
 import { HttpStatusCodes as Code } from "../../utils/Enum";
 
@@ -21,7 +21,7 @@ export const addEnergyChargingLevel = async(req : Request) => {
 export const getEnergyChargingLevel = async() => {
     try {
         
-        const levelInfo = await EnergyChargingLevel.find({});
+        const levelInfo = await EnergyChargingLevel.findAll();
 
         return GenResObj(Code.OK, true, "Energy charging level info fetched successfully", levelInfo)
 

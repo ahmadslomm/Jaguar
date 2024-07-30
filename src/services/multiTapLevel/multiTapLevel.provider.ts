@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { TLevelInfoModel } from "../../utils/Types";
 import LevelInfo from "../../schema/levelInfo.schema";
-import MultiTapLevel from '../../schema/multiTapLevel.schema';
+import {MultiTapLevel} from '../../schema/multiTapLevel.schema';
 import { GenResObj } from "../../utils/ResponseFormat";
 import { HttpStatusCodes as Code } from "../../utils/Enum";
 
@@ -21,7 +21,7 @@ export const addMultiTapLevel = async(req : Request) => {
 export const getMultiTapLevel = async() => {
     try {
         
-        const levelInfo = await MultiTapLevel.find({});
+        const levelInfo = await MultiTapLevel.findAll();
 
         return GenResObj(Code.OK, true, "Multi tap level info fetched successfully", levelInfo)
 

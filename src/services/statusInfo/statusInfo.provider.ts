@@ -1,12 +1,13 @@
 import { Request } from "express";
-import StatusInfo from "../../schema/statusInfo.schema";
+import {StatusInfo} from "../../schema/statusInfo.schema";
 import { GenResObj } from "../../utils/ResponseFormat";
 import { HttpStatusCodes as Code  } from "../../utils/Enum";
-import statusInfoModel from "../../schema/statusInfo.schema";
+import { TStatusInfo } from "../../utils/Types";
+// import statusInfoModel from "../../schema/statusInfo.schema";
 
 export const addStatusInfo = async(req: Request)  => {
     try {
-        const { status, minRequired, maxRequired } = req.body;
+        const { status, minRequired, maxRequired } : TStatusInfo = req.body;
 
         const addStatusInfo = await StatusInfo.create({
             status,
@@ -23,7 +24,7 @@ export const addStatusInfo = async(req: Request)  => {
 
 export const getStatusList = async() => {
     try {
-        const statusInfoList = await statusInfoModel.find({});
+        const statusInfoList = await StatusInfo.findAll();
 
         return GenResObj(Code.OK, true, 'Status info fetched successfully',statusInfoList)
     } catch (error) {
