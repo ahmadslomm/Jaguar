@@ -20,7 +20,17 @@ export const getUserTokenInfo = async(req: AuthRequest) => {
         
         await calculateEnergyTankBalance(user?.id);
 
-        const userTokenInfo = await UserTokenInfo.findOne({where :{ userId : user?.id }});
+        const userTokenInfo = await UserTokenInfo.findOne(
+            {
+                where :{ userId : user?.id }, 
+                attributes : ['currentBalance', 'totalTankCapacity', 'currentTankBalance', 'multiTapLevel', 'energyTankLevel', 'energyChargingLevel', 'dailyChargingBooster', 'dailyTappingBoosters'],
+                include:[
+                    {model : StatusInfo,
+                    as : 'statusInfo',
+                    attributes: ['status']}
+                ]
+            }
+        );
 
         // console.log("Getting the user token info : ", userTokenInfo)
         return GenResObj(Code.OK, true, "User token info fetched successfully.", userTokenInfo)

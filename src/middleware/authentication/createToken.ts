@@ -16,7 +16,8 @@ export const createJsonWebToken = async(userInfo :{
         const token = await jwt.sign(userInfo, secretKey, {
             expiresIn: maxAge,
         });
-        return `Bearer ${token}`;
+        // return `Bearer ${token}`;
+        return `${token}`;
     } catch (error) {
         console.log("Getting error for creating json web token : ", error);
     throw error;

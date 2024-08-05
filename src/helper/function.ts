@@ -1,13 +1,14 @@
-import {User} from "../schema/user.schema";
+import { User } from "../schema/user.schema";
 import LevelInfo from "../schema/levelInfo.schema";
-import {StatusInfo} from "../schema/statusInfo.schema";
-import {UserTokenInfo} from "../schema/userTokenInfo.schema";
-import {MultiTapLevel} from "../schema/multiTapLevel.schema";
-import {EnergyTankLevel} from "../schema/energyTankLevel.schema";
-import {EnergyChargingLevel} from "../schema/energyChargingLevel.schema";
-import jwt from 'jsonwebtoken';
+import { StatusInfo } from "../schema/statusInfo.schema";
+import { UserTokenInfo } from "../schema/userTokenInfo.schema";
+import { MultiTapLevel } from "../schema/multiTapLevel.schema";
+import { EnergyTankLevel } from "../schema/energyTankLevel.schema";
+import { EnergyChargingLevel } from "../schema/energyChargingLevel.schema";
+import jwt from "jsonwebtoken";
 import { TTelegramUserInfo, TUserModel } from "../utils/Types";
 import { ObjectId, Types } from "mongoose";
+import { ReferralClaim } from "../schema/referralClaim.schema";
 
 // ******************* Register User For Server-side Bot Request******************* //
 
@@ -33,77 +34,107 @@ import { ObjectId, Types } from "mongoose";
 
 // ******************* Create User With Status and different Level ID *******************
 export const createUser = async (userInfo: TUserModel) => {
-    try {
-      const { firstName, lastName, telegramId } = userInfo;
-  
-      // Fetch LevelInfo
+  try {
+    const { firstName, lastName, telegramId, referralCode } = userInfo;
+    
     //   const levelInfo = {levelName :'LEVEL-1'};
-      const levelInfo = await LevelInfo.findOne({ where: { levelName: "LEVEL-1" } });
-  
-      // Fetch MultiTapLevel
-    //   const multiTapLevel = {levelName :'LEVEL-1'}
-      const multiTapLevel = await MultiTapLevel.findOne({ where: { levelName: "LEVEL-1" }, attributes: ['id', 'levelName'] });
-  
-      // Fetch EnergyTankLevel
-    //   const energyTankLevel ={levelName :  'LEVEL-1', tankCapacity : 500}
-      const energyTankLevel = await EnergyTankLevel.findOne({ where: { levelName: "LEVEL-1" }, attributes: ['id', 'levelName', 'tankCapacity'] });
-  
-      // Fetch EnergyChargingLevel
-    //   const energyChargingLevel = {levelName :'LEVEL-1'}
-      const energyChargingLevel = await EnergyChargingLevel.findOne({ where: { levelName: "LEVEL-1" }, attributes: ['id', 'levelName'] });
-  
-      // Fetch StatusInfo
-      const statusInfo = await StatusInfo.findOne({ where: { minRequired: 0 } });
-  
-      // Create User
-      const createdUser = await User.create({
-        telegramId,
-        firstName,
-        lastName,
-      });
+    const levelInfo = await LevelInfo.findOne({
+      where: { levelName: "LEVEL-1" },
+    });
 
-      console.log("Getting the user...", createdUser, energyChargingLevel, energyTankLevel);
-      console.log(" statusInfo",  statusInfo)
-      console.log(" energyChargingLevel",  energyChargingLevel)
-      console.log(" energyTankLevel",  energyTankLevel)
+    //   const multiTapLevel = {levelName :'LEVEL-1'}
+    const multiTapLevel = await MultiTapLevel.findOne({
+      where: { levelName: "LEVEL-1" },
+      attributes: ["id", "levelName"],
+    });
+
+    //   const energyTankLevel ={levelName :  'LEVEL-1', tankCapacity : 500}
+    const energyTankLevel = await EnergyTankLevel.findOne({
+      where: { levelName: "LEVEL-1" },
+      attributes: ["id", "levelName", "tankCapacity"],
+    });
+
+    //   const energyChargingLevel = {levelName :'LEVEL-1'}
+    const energyChargingLevel = await EnergyChargingLevel.findOne({
+      where: { levelName: "LEVEL-1" },
+      attributes: ["id", "levelName"],
+    });
+
+    const statusInfo = await StatusInfo.findOne({ where: { minRequired: 0 } });
+
+    const referredByUser = referralCode
+      ? await User.findOne({ where: { referralCode: referralCode } })
+      : null;
+
+    const referralCodeToStore :string| undefined = generateReferralCode(telegramId!.toString())
+
+    const createdUser = await User.create({
+      telegramId,
+      firstName,
+      lastName,
+      referralCode : referralCodeToStore,
+      referredBy: referredByUser ? referredByUser.id : null,
+    });
+
+    if (referredByUser) {
+        await ReferralClaim.create({
+          referrerId: referredByUser.id,
+          referredUserId: createdUser.id,
+          claimed: false,
+          referralAmount : process.env.SIGNUP_REFERRAL_AMOUNT,
+        });
+      }
+
+    // console.log(" statusInfo", statusInfo);
+    // console.log(" energyChargingLevel", energyChargingLevel);
+    // console.log(" energyTankLevel", energyTankLevel);
     //   console.log(" statusInfo",  statusInfo)
-      // Create UserTokenInfo if user creation was successful
-      if (createdUser && statusInfo) {
-          const createUserTokenInfoData:any = {
-            userId: createdUser.id, // Ensure this is correctly assigned
-            statusId: statusInfo?.id, // Ensure this is correctly assigned
-            totalTankCapacity: energyTankLevel?.tankCapacity, // Ensure this is correctly assigned
-            multiTapLevel: multiTapLevel?.levelName, // Ensure this is correctly assigned
-            energyTankLevel: energyTankLevel?.levelName, // Ensure this is correctly assigned
-            energyChargingLevel: energyChargingLevel?.levelName, // Ensure this is correctly assigned
-            tankUpdateTime: new Date(), // Current timestamp
-          };
-        const temp = await UserTokenInfo.create(createUserTokenInfoData);
-        console.log("Temp: " + temp)
+    // Create UserTokenInfo if user creation was successful
+    if (createdUser && statusInfo) {
+      const createUserTokenInfoData: any = {
+        userId: createdUser.id, // Ensure this is correctly assigned
+        statusId: statusInfo?.id, // Ensure this is correctly assigned
+        totalTankCapacity: energyTankLevel?.tankCapacity, // Ensure this is correctly assigned
+        multiTapLevel: multiTapLevel?.levelName, // Ensure this is correctly assigned
+        energyTankLevel: energyTankLevel?.levelName, // Ensure this is correctly assigned
+        energyChargingLevel: energyChargingLevel?.levelName, // Ensure this is correctly assigned
+        tankUpdateTime: new Date(), // Current timestamp
+      };
+      const temp = await UserTokenInfo.create(createUserTokenInfoData);
+    //   console.log("Temp: " + temp);
     }
-    } catch (error) {
-      console.error("Getting error for creating user with level and status:", error);
-      throw error;
-    }
-  };
+  } catch (error) {
+    console.error(
+      "Getting error for creating user with level and status:",
+      error
+    );
+    throw error;
+  }
+};
 
 // ******************* Calculation for energy tank balance ******************* //
 export const calculateEnergyTankBalance = async (
   userId: string | undefined
 ) => {
   try {
-    console.log("userID: " + userId)
-    const userTokenInfo = await UserTokenInfo.findOne({where :{
-      userId
-    }});
+    console.log("userID: " + userId);
+    const userTokenInfo = await UserTokenInfo.findOne({
+      where: {
+        userId,
+      },
+    });
 
-    const getEnergyTankLevel = await EnergyTankLevel.findOne({where :{
-      levelName: userTokenInfo?.energyTankLevel,
-    }});
+    const getEnergyTankLevel = await EnergyTankLevel.findOne({
+      where: {
+        levelName: userTokenInfo?.energyTankLevel,
+      },
+    });
 
-    const getEnergyChargingLevel: any = await EnergyChargingLevel.findOne({where :{
-      levelName: userTokenInfo?.energyChargingLevel,
-    }});
+    const getEnergyChargingLevel: any = await EnergyChargingLevel.findOne({
+      where: {
+        levelName: userTokenInfo?.energyChargingLevel,
+      },
+    });
 
     const currentTime = new Date();
 
@@ -112,20 +143,23 @@ export const calculateEnergyTankBalance = async (
     let updateFiled: any = { tankUpdateTime: currentTime };
 
     // console.log("0000000000", userTokenInfo?.totalTankCapacity, userTokenInfo?.currentTankBalance)
-    console.log("Getting the last update time for ", lastUpdateTime, currentTime );
+    console.log(
+      "Getting the last update time for ",
+      lastUpdateTime,
+      currentTime
+    );
     if (lastUpdateTime) {
       const lastUpdateDate = new Date(lastUpdateTime).setHours(0, 0, 0, 0);
       const currentDate = new Date(currentTime).setHours(0, 0, 0, 0);
 
-    //   console.log("Getting dates : ", lastUpdateDate, currentDate )
+      //   console.log("Getting dates : ", lastUpdateDate, currentDate )
 
       lastUpdateDate !== currentDate &&
         (updateFiled["dailyChargingBooster"] = 7);
       lastUpdateDate !== currentDate &&
         (updateFiled["dailyTappingBoosters"] = 7);
 
-
-     //check to update the current balance
+      //check to update the current balance
       if (
         userTokenInfo?.totalTankCapacity > userTokenInfo?.currentTankBalance
       ) {
@@ -147,23 +181,45 @@ export const calculateEnergyTankBalance = async (
       }
 
       // console.log("3333333", updatedTankBalance)
-      
+
       // console.log("4444444", updateUserTokenInfo)
     }
     // console.log(
     //   "Getting the updatedFiled ********************************",
     //   updateFiled
     // );
-    const userTokenInfoForUpdate = await UserTokenInfo.findOne({ where: { userId } });
+    const userTokenInfoForUpdate = await UserTokenInfo.findOne({
+      where: { userId },
+    });
 
     if (userTokenInfo) {
       await userTokenInfoForUpdate?.update(updateFiled);
       await userTokenInfoForUpdate?.reload();
-    //   console.log('Updated UserTokenInfo:', userTokenInfo);
-    return;
+      //   console.log('Updated UserTokenInfo:', userTokenInfo);
+      return;
     }
   } catch (error) {
     console.log("Getting error for calculating energy tank balance : ", error);
     throw error;
   }
 };
+
+//******************* Generate Refferal Code *******************
+function generateReferralCode(telegramId:string) {
+    const chars = 'ABCDEFGHIJKLMNPQRSTUVWXYZ'; // Omitted O for better distinction
+    const digits = '0123456789';
+    let referralCode = '';
+  
+    for (let i = 0; i < telegramId.length; i++) {
+      if (i % 2 === 0) {
+        referralCode += chars[parseInt(telegramId[i], 10)];
+      } else {
+        referralCode += digits[parseInt(telegramId[i], 10)];
+      }
+    };
+
+    return referralCode ? referralCode : undefined;
+  };
+  
+  
+  

@@ -7,6 +7,7 @@ import EnergyChargingLevelRoute from './services/EnergyChargingLevel/EnergyCharg
 import StatusInfoRoute from './services/statusInfo/statusInfo.route';
 import HomeRoute from './services/home/home.route';
 import BoosterRoute from './services/booster/booster.route';
+import ReferralRoute from './services/referrals/referrals.route';
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use('/energyChargingLevel', EnergyChargingLevelRoute);
 router.use('/status', StatusInfoRoute);
 router.use('/home', HomeRoute);
 router.use('/booster', BoosterRoute);
+router.use('/referral',ReferralRoute);
 
 export default router;

@@ -1,78 +1,77 @@
-import { TUserTokenInfo } from '../utils/Types';
-import { Table, Column, Model, DataType, ForeignKey, PrimaryKey } from 'sequelize-typescript';
-import { User } from './user.schema';
-import { StatusInfo } from './statusInfo.schema';
+import { TUserTokenInfo } from "../utils/Types";
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  ForeignKey,
+  PrimaryKey,
+  BelongsTo,
+} from "sequelize-typescript";
+import { User } from "./user.schema";
+import { StatusInfo } from "./statusInfo.schema";
 
-@Table({ tableName: 'userTokenInfo', timestamps: false })
+@Table({ tableName: "userTokenInfo", timestamps: false })
 export class UserTokenInfo extends Model<TUserTokenInfo> {
+  @PrimaryKey
+  @Column({
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
+    primaryKey: true,
+  })
+  id!: string;
 
-    @PrimaryKey
-    @Column({type: DataType.UUID, defaultValue : DataType.UUIDV4,primaryKey: true})
-    id!: string;
+  @ForeignKey(() => User)
+  @Column({ type: DataType.UUID, allowNull: false })
+  userId!: string;
 
-    @ForeignKey(() => User)
-    @Column({ type: DataType.UUID, allowNull: false })
-    userId!: string;
+  @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 0 })
+  turnOverBalance!: number;
 
-    @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 0 })
-    turnOverBalance!: number;
+  @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 0 })
+  currentBalance!: number;
 
-    @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 0 })
-    currentBalance!: number;
+  @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 0 })
+  totalTankCapacity!: number;
 
-    @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 0 })
-    totalTankCapacity!: number;
+  @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 0 })
+  currentTankBalance!: number;
 
-    @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 0 })
-    currentTankBalance!: number;
+  // @ForeignKey(() => LevelInfo)
+  // @Column({ type: DataType.INTEGER })
+  // levelId?: number;
 
-    // @ForeignKey(() => LevelInfo)
-    // @Column({ type: DataType.INTEGER })
-    // levelId?: number;
+  @Column({ type: DataType.STRING })
+  multiTapLevel?: string;
 
-    @Column({ type: DataType.STRING })
-    multiTapLevel?: string;
+  @Column({ type: DataType.STRING })
+  energyTankLevel?: string;
 
-    @Column({ type: DataType.STRING })
-    energyTankLevel?: string;
+  @Column({ type: DataType.STRING })
+  energyChargingLevel?: string;
 
-    @Column({ type: DataType.STRING })
-    energyChargingLevel?: string;
+  @ForeignKey(() => StatusInfo)
+  @Column({ type: DataType.UUID })
+  statusId?: string;
 
-    @ForeignKey(() => StatusInfo)
-    @Column({ type: DataType.UUID })
-    statusId?: string;
+  @Column({ type: DataType.DATE })
+  tankUpdateTime?: Date;
 
-    @Column({ type: DataType.DATE })
-    tankUpdateTime?: Date;
+  @Column({ type: DataType.DATE })
+  lastRewardDate?: Date;
 
-    @Column({ type: DataType.DATE })
-    lastRewardDate?: Date;
+  @Column({ type: DataType.INTEGER })
+  lastRewardAmount?: number;
 
-    @Column({ type: DataType.INTEGER })
-    lastRewardAmount?: number;
+  @Column({ type: DataType.INTEGER, defaultValue: 7 })
+  dailyChargingBooster!: number;
 
-    @Column({ type: DataType.INTEGER, defaultValue: 7 })
-    dailyChargingBooster!: number;
+  @Column({ type: DataType.INTEGER, defaultValue: 7 })
+  dailyTappingBoosters!: number;
 
-    @Column({ type: DataType.INTEGER, defaultValue: 7 })
-    dailyTappingBoosters!: number;
+  @BelongsTo(() => StatusInfo, "statusId")
+  statusInfo!: StatusInfo;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import { Schema, Model, model }  from 'mongoose';
 
@@ -136,7 +135,7 @@ export class UserTokenInfo extends Model<TUserTokenInfo> {
 //             default : 7
 //         },
 //         dailyTappingBoosters : {
-//             type : Number, 
+//             type : Number,
 //             default : 7
 //         }
 //     }

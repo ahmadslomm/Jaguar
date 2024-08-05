@@ -19,7 +19,9 @@ export type TUser = {
     id?: number | string;
     firstName?: string;
     lastName?: string;
-    telegramId?: string | undefined;  
+    telegramId?: string | undefined; 
+    referralCode?: string;
+    referredBy?: string | null;
 };
 
 export type TUserModel = TUser & Document & SchemaTimestampsConfig;
@@ -106,3 +108,13 @@ export type TEnergyChargingLevel = {
 };
 
 export type TEnergyChargingLevelModel = TEnergyChargingLevel & Document & SchemaTimestampsConfig ;
+
+// *********** REFERRAL Claim *********** //
+export type TReferralClaim = {
+    id?: string;
+    referrerId: string;
+    referredUserId: string;
+    claimed: boolean;
+    referralAmount: number;
+    referralStatus: string;
+};

@@ -1,5 +1,6 @@
 import { TUser } from '../utils/Types';
-import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, CreatedAt, UpdatedAt } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, CreatedAt, UpdatedAt, BeforeCreate, HasMany } from 'sequelize-typescript';
+import { UserTokenInfo } from './userTokenInfo.schema';
 
 
 
@@ -18,6 +19,12 @@ import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, CreatedAt, U
   
       @Column({ type: DataType.STRING, allowNull: false, unique: true })
       telegramId?: string;
+
+      @Column({ type: DataType.STRING, allowNull: false, unique: true })
+      referralCode!: string;
+    
+      @Column({type : DataType.UUID})
+      referredBy?: string;    
   
       @CreatedAt
       @Column({ type: DataType.DATE })
@@ -26,6 +33,14 @@ import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, CreatedAt, U
       @UpdatedAt
       @Column({ field: 'updated_at', type: DataType.DATE })
       updatedAt?: Date;
+
+      @HasMany(() => UserTokenInfo, 'userId')
+      userTokenInfos!: UserTokenInfo[];
+
+//       @BeforeCreate
+//   static generateReferralCode(instance: User) {
+//     instance.referralCode = uuidv4();
+//   }
   }
   
 
@@ -33,6 +48,10 @@ import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, CreatedAt, U
 
 
 
+
+function uuidv4(): string {
+    throw new Error('Function not implemented.');
+}
 // import { Schema, Model, model } from 'mongoose';
 
 
