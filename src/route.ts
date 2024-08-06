@@ -8,6 +8,7 @@ import StatusInfoRoute from './services/statusInfo/statusInfo.route';
 import HomeRoute from './services/home/home.route';
 import BoosterRoute from './services/booster/booster.route';
 import ReferralRoute from './services/referrals/referrals.route';
+import LeaderboardRoute from './services/leaderboard/leaderboard.router';
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use('/status', StatusInfoRoute);
 router.use('/home', HomeRoute);
 router.use('/booster', BoosterRoute);
 router.use('/referral',ReferralRoute);
+router.use('/leaderboard', LeaderboardRoute);
 
 export default router;

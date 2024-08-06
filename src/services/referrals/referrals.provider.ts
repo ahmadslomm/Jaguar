@@ -16,14 +16,14 @@ export const getReferralInfo = async (req: AuthRequest) => {
     const { telegramId } = req;
 
     const user = await User.findOne({ where: { telegramId: telegramId } });
-
+    console.log("USer", user);
     const referralCode = user?.referralCode;
 
+    const invitationLink = `${process.env.REFERRAL_URL}?referralCode=${referralCode}`;
+
     const referralClaims = await ReferralClaim.findAll({
-      where: {
-        referrerId: user?.id,
-      },
-      attributes: ["id","referralAmount", "claimed"],
+      where: { referrerId: user?.id },
+      attributes: ["id", "referralAmount", "claimed"],
       include: [
         {
           model: User,
@@ -42,33 +42,47 @@ export const getReferralInfo = async (req: AuthRequest) => {
             },
           ],
         },
-      ],
+       ],
     });
 
+    let totalCoin = 0;
+
     const formattedReferralClaims = referralClaims.map((referralClaim: any) => {
+      // console.dir(referralClaim.referredUser.userTokenInfos[0], { depth : null} )
       const { firstName, lastName } = referralClaim.referredUser;
       const status =
         referralClaim.referredUser.userTokenInfos.length > 0
-          ? referralClaim.referredUser.userTokenInfos[0].status.status
+          ? referralClaim.referredUser.userTokenInfos[0].statusInfo.status
           : null;
 
+          totalCoin = totalCoin + referralClaim.referralAmount
+
       return {
-        id: referralClaim.id,
-        referralAmount: referralClaim.referralAmount,
-        claimed: referralClaim.claimed,
-        referredUser: {
-          firstName,
-          lastName,
-          status,
-        },
+        name : `${firstName} ${lastName} `,
+        level : status,
+        coins : referralClaim.referralAmount,
+        // id: referralClaim.id,
+        // referralAmount: referralClaim.referralAmount,
+        // claimed: referralClaim.claimed,
+        // referredUser: {
+        //   firstName,
+        //   lastName,
+        //   status,
+        // },
       };
     });
+
+    const formattedResponse = {
+      invitationLink,
+      teamTotalCoins : totalCoin,
+      team: formattedReferralClaims
+    }
 
     return GenResObj(
       Code.OK,
       true,
       "Referral info fetched successfully",
-      formattedReferralClaims
+      formattedResponse
     );
   } catch (error) {
     console.log("Getting error for getting referral info: " + error);
@@ -104,16 +118,26 @@ export const claimReferralAmount = async (req: AuthRequest) => {
         { where: { id: referralRecordId } }
       );
 
-      const updateUserTokenInfo = await UserTokenInfo.update({
-        currentBalance: literal(`currentBalance + ${checkAvlReferralRecord.referralAmount}`),
-        turnOverBalance: literal(`turnOverBalance + ${checkAvlReferralRecord.referralAmount}`),
-      },
-      { where: { userId : checkAvlReferralRecord.referrerId } }
-    );
-    return GenResObj(Code.OK, true, "Referral amount claimed successfully", referralClaim)
-    };
+      const updateUserTokenInfo = await UserTokenInfo.update(
+        {
+          currentBalance: literal(
+            `currentBalance + ${checkAvlReferralRecord.referralAmount}`
+          ),
+          turnOverBalance: literal(
+            `turnOverBalance + ${checkAvlReferralRecord.referralAmount}`
+          ),
+        },
+        { where: { userId: checkAvlReferralRecord.referrerId } }
+      );
+      return GenResObj(
+        Code.OK,
+        true,
+        "Referral amount claimed successfully",
+        referralClaim
+      );
+    }
 
-    return GenResObj(Code.NOT_FOUND, false, "Something went wrong" )
+    return GenResObj(Code.NOT_FOUND, false, "Something went wrong");
   } catch (error) {
     console.log("Getting error for claiming referral amount :", error);
     return GenResObj(

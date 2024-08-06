@@ -71,6 +71,10 @@ export class UserTokenInfo extends Model<TUserTokenInfo> {
 
   @BelongsTo(() => StatusInfo, "statusId")
   statusInfo!: StatusInfo;
+
+  @BelongsTo(() => User, "userId")
+  userInfo!: User;
+
 }
 
 // import { Schema, Model, model }  from 'mongoose';

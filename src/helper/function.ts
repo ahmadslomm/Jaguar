@@ -80,8 +80,9 @@ export const createUser = async (userInfo: TUserModel) => {
         await ReferralClaim.create({
           referrerId: referredByUser.id,
           referredUserId: createdUser.id,
-          claimed: false,
+          claimed: true,
           referralAmount : process.env.SIGNUP_REFERRAL_AMOUNT,
+          referralStatus: 'CLAIMED'
         });
       }
 
@@ -99,6 +100,8 @@ export const createUser = async (userInfo: TUserModel) => {
         energyTankLevel: energyTankLevel?.levelName, // Ensure this is correctly assigned
         energyChargingLevel: energyChargingLevel?.levelName, // Ensure this is correctly assigned
         tankUpdateTime: new Date(), // Current timestamp
+        ...(referredByUser && {turnOverBalance :process.env.SIGNUP_REFERRAL_AMOUNT }),
+        ...(referredByUser && {currentBalance :process.env.SIGNUP_REFERRAL_AMOUNT })
       };
       const temp = await UserTokenInfo.create(createUserTokenInfoData);
     //   console.log("Temp: " + temp);

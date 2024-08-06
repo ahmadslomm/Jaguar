@@ -24,7 +24,7 @@ export class ReferralClaim extends Model {
   referralAmount!: number;
 
   //status referralStatus enum : PENDING | CLAIMED//
-  @Column({ type: DataType.STRING, defaultValue: "PENDING"})
+  @Column({ type: DataType.STRING,})
   referralStatus!: number;
 
   @CreatedAt
