@@ -1,16 +1,5 @@
 import { TStatusInfo } from '../utils/Types';
-
 import { Table, Column, Model, DataType, CreatedAt, UpdatedAt, PrimaryKey } from 'sequelize-typescript';
-
-export interface IStatusInfoAttributes {
-    id?: number;
-    status: string;
-    minRequired: number;
-    maxRequired: number;
-    reward?: number;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
 
 @Table({ tableName: 'statusInfo', timestamps: true })
 export class StatusInfo extends Model<TStatusInfo> {

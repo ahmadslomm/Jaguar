@@ -3,7 +3,7 @@ import {User} from "../../schema/user.schema";
 import { GenResObj } from "../../utils/ResponseFormat";
 import { HttpStatusCodes as Code } from "../../utils/Enum";
 import LevelInfo from "../../schema/levelInfo.schema";
-import { createUser } from "../../helper/function";
+import { createUser, updateLeagueLevel } from "../../helper/function";
 import { createJsonWebToken } from "../../middleware/authentication/createToken";
 
 export const register = async (req: Request) => {
@@ -15,6 +15,8 @@ export const register = async (req: Request) => {
     if (!checkAvlUser) {
         await createUser(payload)
     };
+
+    await updateLeagueLevel(payload?.telegramId)
 
     const jsonToken = await createJsonWebToken({userId : checkAvlUser?.id,telegramId : payload?.telegramId })
 

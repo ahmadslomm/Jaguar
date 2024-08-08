@@ -9,6 +9,10 @@ import jwt from "jsonwebtoken";
 import { TTelegramUserInfo, TUserModel } from "../utils/Types";
 import { ObjectId, Types } from "mongoose";
 import { ReferralClaim } from "../schema/referralClaim.schema";
+import { SocialMediaTrek } from "../schema/socialMediaTrek.schema";
+import { ReferralTrek } from "../schema/referralTrek.schema";
+import { LeagueTrek } from "../schema/leagueTrek.schema";
+import { literal, Op } from "sequelize";
 
 // ******************* Register User For Server-side Bot Request******************* //
 
@@ -36,7 +40,7 @@ import { ReferralClaim } from "../schema/referralClaim.schema";
 export const createUser = async (userInfo: TUserModel) => {
   try {
     const { firstName, lastName, telegramId, referralCode } = userInfo;
-    
+
     //   const levelInfo = {levelName :'LEVEL-1'};
     const levelInfo = await LevelInfo.findOne({
       where: { levelName: "LEVEL-1" },
@@ -66,30 +70,43 @@ export const createUser = async (userInfo: TUserModel) => {
       ? await User.findOne({ where: { referralCode: referralCode } })
       : null;
 
-    const referralCodeToStore :string| undefined = generateReferralCode(telegramId!.toString())
+    const referralCodeToStore: string | undefined = generateReferralCode(
+      telegramId!.toString()
+    );
 
     const createdUser = await User.create({
       telegramId,
       firstName,
       lastName,
-      referralCode : referralCodeToStore,
+      referralCode: referralCodeToStore,
       referredBy: referredByUser ? referredByUser.id : null,
     });
 
     if (referredByUser) {
-        await ReferralClaim.create({
-          referrerId: referredByUser.id,
-          referredUserId: createdUser.id,
-          claimed: true,
-          referralAmount : process.env.SIGNUP_REFERRAL_AMOUNT,
-          referralStatus: 'CLAIMED'
-        });
-      }
+      await ReferralClaim.create({
+        referrerId: referredByUser.id,
+        referredUserId: createdUser.id,
+        claimed: true,
+        referralAmount: process.env.SIGNUP_REFERRAL_AMOUNT,
+        referralStatus: "CLAIMED",
+      });
 
-    // console.log(" statusInfo", statusInfo);
-    // console.log(" energyChargingLevel", energyChargingLevel);
-    // console.log(" energyTankLevel", energyTankLevel);
-    //   console.log(" statusInfo",  statusInfo)
+      await UserTokenInfo.update(
+        { 
+          currentBalance: literal(`currentBalance + ${process.env.SIGNUP_REFERRAL_AMOUNT}`),
+          turnOverBalance: literal(`turnOverBalance + ${process.env.SIGNUP_REFERRAL_AMOUNT}`),
+         },
+        { where: { userId : referredByUser?.id } }
+      );
+
+      const totalCount = await ReferralClaim.count(
+        { where: { referrerId: referredByUser.id, claimed: true } }
+      );
+
+      //Update the refferel count of the referred user 
+      updateRefferelCount(referredByUser?.id, totalCount)
+    }
+
     // Create UserTokenInfo if user creation was successful
     if (createdUser && statusInfo) {
       const createUserTokenInfoData: any = {
@@ -100,11 +117,23 @@ export const createUser = async (userInfo: TUserModel) => {
         energyTankLevel: energyTankLevel?.levelName, // Ensure this is correctly assigned
         energyChargingLevel: energyChargingLevel?.levelName, // Ensure this is correctly assigned
         tankUpdateTime: new Date(), // Current timestamp
-        ...(referredByUser && {turnOverBalance :process.env.SIGNUP_REFERRAL_AMOUNT }),
-        ...(referredByUser && {currentBalance :process.env.SIGNUP_REFERRAL_AMOUNT })
+        // ...(referredByUser && {
+        //   turnOverBalance: process.env.SIGNUP_REFERRAL_AMOUNT,
+        // }),
+        // ...(referredByUser && {
+        //   currentBalance: process.env.SIGNUP_REFERRAL_AMOUNT,
+        // }),
       };
-      const temp = await UserTokenInfo.create(createUserTokenInfoData);
-    //   console.log("Temp: " + temp);
+      const userTOkenInfoCreated = await UserTokenInfo.create(
+        createUserTokenInfoData
+      );
+      const socialMediaTrek = await SocialMediaTrek.create({
+        userId: createdUser?.id,
+      });
+      const referralTrek = await ReferralTrek.create({
+        userId: createdUser.id,
+      });
+      const leagueTrek = await LeagueTrek.create({ userId: createdUser.id });
     }
   } catch (error) {
     console.error(
@@ -208,21 +237,493 @@ export const calculateEnergyTankBalance = async (
 };
 
 //******************* Generate Refferal Code *******************
-function generateReferralCode(telegramId:string) {
-    const chars = 'ABCDEFGHIJKLMNPQRSTUVWXYZ'; // Omitted O for better distinction
-    const digits = '0123456789';
-    let referralCode = '';
-  
-    for (let i = 0; i < telegramId.length; i++) {
-      if (i % 2 === 0) {
-        referralCode += chars[parseInt(telegramId[i], 10)];
-      } else {
-        referralCode += digits[parseInt(telegramId[i], 10)];
-      }
-    };
+function generateReferralCode(telegramId: string) {
+  const chars = "ABCDEFGHIJKLMNPQRSTUVWXYZ"; // Omitted O for better distinction
+  const digits = "0123456789";
+  let referralCode = "";
 
-    return referralCode ? referralCode : undefined;
+  for (let i = 0; i < telegramId.length; i++) {
+    if (i % 2 === 0) {
+      referralCode += chars[parseInt(telegramId[i], 10)];
+    } else {
+      referralCode += digits[parseInt(telegramId[i], 10)];
+    }
+  }
+
+  return referralCode ? referralCode : undefined;
+}
+
+//******************* Get Social Media Trek Info ******************* //
+export async function getSocialMediaTrekInfo(userId: string | undefined) {
+  const checkAvlSocialMediaTrek = await SocialMediaTrek.findOne({
+    where: { userId },
+  });
+
+  const socialMediaTasks = [
+    {
+      type: "FollowonTwitter",
+      follow: checkAvlSocialMediaTrek?.followTwitter,
+      claimed: checkAvlSocialMediaTrek?.followTwitterClaimed,
+    },
+    {
+      type: "JoinTwitter",
+      follow: checkAvlSocialMediaTrek?.joinTwitter,
+      claimed: checkAvlSocialMediaTrek?.joinTwitterClaimed,
+    },
+    {
+      type: "FollowonInstagram",
+      follow: checkAvlSocialMediaTrek?.followInstagram,
+      claimed: checkAvlSocialMediaTrek?.followInstagramClaimed,
+    },
+    {
+      type: "JoinInstagram",
+      follow: checkAvlSocialMediaTrek?.joinInstagram,
+      claimed: checkAvlSocialMediaTrek?.joinInstagramClaimed,
+    },
+    {
+      type: "FollowonYouTube",
+      follow: checkAvlSocialMediaTrek?.followYouTube,
+      claimed: checkAvlSocialMediaTrek?.followYouTubeClaimed,
+    },
+    {
+      type: "JoinYouTube",
+      follow: checkAvlSocialMediaTrek?.joinYouTube,
+      claimed: checkAvlSocialMediaTrek?.joinYouTubeClaimed,
+    },
+    {
+      type: "FollowonTelegram",
+      follow: checkAvlSocialMediaTrek?.followTelegram,
+      claimed: checkAvlSocialMediaTrek?.followTelegramClaimed,
+    },
+    {
+      type: "JoinTelegram",
+      follow: checkAvlSocialMediaTrek?.joinTelegram,
+      claimed: checkAvlSocialMediaTrek?.joinTelegramClaimed,
+    },
+  ];
+
+  return socialMediaTasks.map((task) => ({
+    type: task.type,
+    coin: checkAvlSocialMediaTrek?.amount || 100000,
+    follow: task.follow,
+    ...(!task.follow &&
+      !task.claimed && { link: process.env.SOCIALMEDIA_LINK }),
+    ...(task.follow && { claimed: task.claimed }),
+  }));
+}
+
+//******************* Get Referral Trek Info ******************* //
+export async function getReferralTrekInfo(userId: string | undefined) {
+  const checkAvlReferralTrek = await ReferralTrek.findOne({
+    where: { userId },
+  });
+
+  const response = {
+    refer: [
+      {
+        type: 1,
+        coin: checkAvlReferralTrek?.amountFor1Friends,
+        claim: checkAvlReferralTrek?.readyToClaimFor1Friends,
+        claimed: checkAvlReferralTrek?.claimedFor1Friends,
+      },
+      {
+        type: 5,
+        coin: checkAvlReferralTrek?.amountFor5Friends,
+        claim: checkAvlReferralTrek?.readyToClaimFor5Friends,
+        claimed: checkAvlReferralTrek?.claimedFor5Friends,
+      },
+      {
+        type: 10,
+        coin: checkAvlReferralTrek?.amountFor10Friends,
+        claim: checkAvlReferralTrek?.readyToClaimFor10Friends,
+        claimed: checkAvlReferralTrek?.claimedFor10Friends,
+      },
+      {
+        type: 20,
+        coin: checkAvlReferralTrek?.amountFor20Friends,
+        claim: checkAvlReferralTrek?.readyToClaimFor20Friends,
+        claimed: checkAvlReferralTrek?.claimedFor20Friends,
+      },
+      {
+        type: 50,
+        coin: checkAvlReferralTrek?.amountFor50Friends,
+        claim: checkAvlReferralTrek?.readyToClaimFor50Friends,
+        claimed: checkAvlReferralTrek?.claimedFor50Friends,
+      },
+      {
+        type: 100,
+        coin: checkAvlReferralTrek?.amountFor100Friends,
+        claim: checkAvlReferralTrek?.readyToClaimFor100Friends,
+        claimed: checkAvlReferralTrek?.claimedFor100Friends,
+      },
+    ],
   };
+
+  return response;
+}
+
+//******************* Get League Trek Info ******************* //
+export async function getLeagueTrekInfo(userId: string, statusId: string) {
+  // Fetch the league trek info for the given user
+  const checkAvlLeagueTrek: any = await LeagueTrek.findOne({
+    where: { userId },
+  });
+
+  const checkAvlStatusInfo = await StatusInfo.findOne({
+    where: { id: statusId },
+    attributes: ["status"],
+  });
+
+  if (!checkAvlLeagueTrek) {
+    // Handle case where no data is found
+    return { League: [] };
+  }
+
+  // Define the levels and their respective amount fields
+  const levels = [
+    {
+      type: "Beginner",
+      amountField: "amountForBeginner",
+      readyToClaimField: "readyToClaimForBeginner",
+      claimedField: "claimedForBeginner",
+    },
+    {
+      type: "Player",
+      amountField: "amountForPlayer",
+      readyToClaimField: "readyToClaimForPlayer",
+      claimedField: "claimedForPlayer",
+    },
+    {
+      type: "Fan",
+      amountField: "amountForFan",
+      readyToClaimField: "readyToClaimForFan",
+      claimedField: "claimedForFan",
+    },
+    {
+      type: "Gamer",
+      amountField: "amountForGamer",
+      readyToClaimField: "readyToClaimForGamer",
+      claimedField: "claimedForGamer",
+    },
+    {
+      type: "Expert",
+      amountField: "amountForExpert",
+      readyToClaimField: "readyToClaimForExpert",
+      claimedField: "claimedForExpert",
+    },
+  ];
+
+  // Generate the response in the desired format
+  const response = {
+    League: levels.map((level: any) => ({
+      type: level.type,
+      level: level.type, // Assuming level field is the same as type
+      coin: checkAvlLeagueTrek[level.amountField], // Format number with commas
+      claim: checkAvlLeagueTrek[level.readyToClaimField],
+      claimed: checkAvlLeagueTrek[level.claimedField],
+      currentLevel: level.type === checkAvlStatusInfo?.status ? true : false, // Example: Setting currentLevel based on some condition
+    })),
+  };
+
+  return response;
+}
+
+//******************* Update Social Media Trek Info ******************* //
+export async function updateSocialTrek(data: any) {
+  const { userId, type, action } = data;
+
+  const socialTrekList = [
+    {
+      type: "FollowonTwitter",
+      action: "follow",
+      fieldName: "followTwitter",
+    },
+    {
+      type: "FollowonTwitter",
+      action: "claim",
+      fieldName: "followTwitterClaimed",
+      amount : 100000
+    },
+    {
+      type: "JoinTwitter",
+      action: "follow",
+      fieldName: "joinTwitter",
+    },
+    {
+      type: "JoinTwitter",
+      action: "claim",
+      fieldName: "joinTwitterClaimed",
+      amount : 100000
+    },
+    {
+      type: "FollowonInstagram",
+      action: "follow",
+      fieldName: "followInstagram",
+    },
+    {
+      type: "FollowonInstagram",
+      action: "claim",
+      fieldName: "followInstagramClaimed",
+      amount : 100000
+    },
+    {
+      type: "JoinInstagram",
+      action: "follow",
+      fieldName: "joinInstagram",
+    },
+    {
+      type: "JoinInstagram",
+      action: "claim",
+      fieldName: "joinInstagramClaimed",
+      amount : 100000
+    },
+    {
+      type: "FollowonYouTube",
+      action: "follow",
+      fieldName: "followYouTube",
+    },
+    {
+      type: "FollowonYouTube",
+      action: "claim",
+      fieldName: "followYouTubeClaimed",
+      amount : 100000
+    },
+    {
+      type: "JoinYouTube",
+      action: "follow",
+      fieldName: "joinYouTube",
+    },
+    {
+      type: "JoinYouTube",
+      action: "claim",
+      fieldName: "joinYouTubeClaimed",
+      amount : 100000
+    },
+    {
+      type: "FollowonTelegram",
+      action: "follow",
+      fieldName: "followTelegram",
+    },
+    {
+      type: "FollowonTelegram",
+      action: "claim",
+      fieldName: "followTelegramClaimed",
+      amount : 100000
+    },
+    {
+      type: "JoinTelegram",
+      action: "follow",
+      fieldName: "joinTelegram",
+    },
+    {
+      type: "JoinTelegram",
+      action: "claim",
+      fieldName: "joinTelegramClaimed",
+      amount : 100000
+    },
+  ];
+
+  const field = socialTrekList.filter(
+    (item) => item.type === type && item.action === action
+  )[0];
+
+  if (!field) {
+    return null;
+    throw new Error("Invalid type or action");
+  }
+
+  // Determine the field name to update
+  const fieldName = field.fieldName;
+
+  const amount = field.amount
+
+  const updatedSocialMediaTrek = await SocialMediaTrek.update(
+    { [fieldName]: true }, // Assuming you want to set the field to true
+    { where: { userId } },
+  );
+
+  if(action == 'claim') {
+    await UserTokenInfo.update(
+      { 
+        currentBalance: literal(`currentBalance + ${amount}`),
+        turnOverBalance: literal(`turnOverBalance + ${amount}`),
+       },
+      { where: { userId } }
+    )
+  }
+
+  return updatedSocialMediaTrek;
+
+};
+
+//******************* Update Referral Trek Info ******************* //
+export async function updateReferTrek(data:any) {
+   const { userId, type, action } = data;
+   const referTrekList = [
+    { type: 1, action: "claim", fieldName: "claimedFor1Friends", amount : 10000},
+    { type: 5, action: "claim", fieldName: "claimedFor5Friends", amount : 500000},
+    { type: 10, action: "claim", fieldName: "claimedFor10Friends", amount : 1000000},
+    { type: 20, action: "claim", fieldName: "claimedFor20Friends", amount : 2000000},
+    { type: 50, action: "claim", fieldName: "claimedFor50Friends", amount : 5000000},
+    { type: 100, action: "claim", fieldName: "claimedFor100Friends", amount : 10000000},
+  ];
+
+  const field = referTrekList.filter(
+    (item) => item.type === type && item.action === action
+  )[0];
+
+  console.log("field ********************************", field)
+
+  if (!field) {
+    return null
+  }
+
+  const fieldName = field.fieldName;
+  const amount = field.amount
+
+  const updatedReferralTrek =  await ReferralTrek.update(
+      { [fieldName]: true }, // Assuming you want to set the field to true
+      { where: { userId } }
+    );
+
+    await UserTokenInfo.update(
+      { 
+        currentBalance: literal(`currentBalance + ${amount}`),
+        turnOverBalance: literal(`turnOverBalance + ${amount}`),
+       },
+      { where: { userId } }
+    )
+
+ return updatedReferralTrek 
+};
+
+//******************* Update League Trek Info ******************* //
+export async function updateLeagueTrek(data:any) {
+  const { userId, type, action } = data;
+
+  const leagueTrekList = [
+    { type: "Beginner", action: "claim", fieldName: "claimedForBeginner", amount: 2000 },
+    { type: "Player", action: "claim", fieldName: "claimedForPlayer", amount: 5000 },
+    { type: "Fan", action: "claim", fieldName: "claimedForFan", amount: 10000 },
+    { type: "Gamer", action: "claim", fieldName: "claimedForGamer", amount: 50000 },
+    { type: "Expert", action: "claim", fieldName: "claimedForExpert", amount: 100000 },
+  ];
+
+  const field = leagueTrekList.filter(
+    (item) => item.type === type && item.action === action
+  )[0];
+
+  if (!field) {
+    return null;
+  }
+
+  const fieldName = field.fieldName;
+  const amount = field.amount;
+
+  const updatedLeagueTrek = await LeagueTrek.update(
+    { [fieldName]: true }, // Assuming you want to set the field to true
+    { where: { userId } }
+  );
+
+  await UserTokenInfo.update(
+    { 
+      currentBalance: literal(`currentBalance + ${amount}`),
+      turnOverBalance: literal(`turnOverBalance + ${amount}`),
+     },
+    { where: { userId } }
+  )
+
+  return updatedLeagueTrek;
+};
+
+//******************* Update Refferel Count ******************* //
+async function updateRefferelCount(userId: string, totalReferral: number) {
+  const referTrekList = [
+    { type: 1, fieldName: "readyToClaimFor1Friends", amount : 10000},
+    { type: 5, fieldName: "readyToClaimFor5Friends", amount : 500000},
+    { type: 10, fieldName: "readyToClaimFor10Friends", amount : 1000000},
+    { type: 20, fieldName: "readyToClaimFor20Friends", amount : 2000000},
+    { type: 50, fieldName: "readyToClaimFor50Friends", amount : 5000000},
+    { type: 100, fieldName: "readyToClaimFor100Friends", amount : 10000000},
+  ];
   
+  const referralTrek = await ReferralTrek.findOne({
+    where: { userId: userId }
+  });
   
+  if (!referralTrek) {
+    throw new Error(`ReferralTrek record not found for userId: ${userId}`);
+  }
   
+  // Update fields based on the totalReferral count
+  for (const { type, fieldName } of referTrekList) {
+    if (totalReferral >= type) {
+      (referralTrek as any)[fieldName] = true; // Dynamically set field value to true
+    }
+  }
+  
+  // Save the updated record
+  await referralTrek.save();  
+}
+
+//******************* Check league/ status level and update it ******************* //
+export async function updateLeagueLevel(telegramId: string) {
+
+  const checkAvlUser = await User.findOne({
+    where: { telegramId },
+  })
+
+  if(!checkAvlUser ) {
+    return null
+  }
+  const checkAvlUserTokenInfo = await UserTokenInfo.findOne({
+    where: { userId: checkAvlUser?.id },
+    attributes: ["currentBalance", "statusId", "turnOverBalance"]
+  });
+
+  console.log("Balance info: " ,checkAvlUserTokenInfo)
+
+  const checkAvlRequiredStatsInfo = await StatusInfo.findOne(
+    {
+      where : {
+        minRequired :{
+          [Op.lte] : checkAvlUserTokenInfo?.turnOverBalance
+        },
+        maxRequired : {
+          [Op.gte] : checkAvlUserTokenInfo?.turnOverBalance
+        }
+      }
+    }
+  );
+
+  console.log("heck ccccc", checkAvlRequiredStatsInfo)
+
+  const updateStatus = await UserTokenInfo.update(
+    { statusId: checkAvlRequiredStatsInfo?.id },
+    { where: { userId : checkAvlUser.id } }
+  );
+
+  const leagueTrekList = [
+    { type: "Beginner", fieldName: "readyToClaimForBeginner", amount: 2000 },
+    { type: "Player", fieldName: "readyToClaimForPlayer", amount: 5000 },
+    { type: "Fan", fieldName: "readyToClaimForFan", amount: 10000 },
+    { type: "Gamer", fieldName: "readyToClaimForGamer", amount: 50000 },
+    { type: "Expert", fieldName: "readyToClaimForExpert", amount: 100000 },
+  ];
+
+  const field = leagueTrekList.filter(
+    (item) => item.type === checkAvlRequiredStatsInfo?.status
+  )[0];
+
+  if (!field) {
+    return null;
+  }
+
+  const fieldName = field.fieldName;
+
+  const updatedLeagueTrek = await LeagueTrek.update(
+    { [fieldName]: true },
+    { where: { userId : checkAvlUser.id } }
+  );
+
+}

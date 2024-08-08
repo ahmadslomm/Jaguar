@@ -118,3 +118,72 @@ export type TReferralClaim = {
     referralAmount: number;
     referralStatus: string;
 };
+
+// *********** Socialmedia Trek *********** //
+export type TSocialMediaTrek = {
+    id?: number;
+    userId?: string;
+    followTwitter?: boolean;
+    followTwitterClaimed?: boolean; // Make these optional
+    joinTwitter?: boolean;
+    joinTwitterClaimed?: boolean;
+    followYouTube?: boolean;
+    followYouTubeClaimed?: boolean;
+    joinYouTube?: boolean;
+    joinYouTubeClaimed?: boolean;
+    followInstagram?: boolean;
+    followInstagramClaimed?: boolean;
+    joinInstagram?: boolean;
+    joinInstagramClaimed?: boolean;
+    followTelegram?: boolean;
+    followTelegramClaimed?: boolean;
+    joinTelegram?: boolean;
+    joinTelegramClaimed?: boolean;
+    amount?: number;
+};
+
+
+// *********** Referral Trek *********** //
+export type TReferralTrek = {
+    id?: string;
+    userId?: string;
+    readyToClaimFor1Friend?: boolean;
+    claimedFor1Friend?: boolean;
+    amountFor1Friends?: number;
+    readyToClaimFor5Friends?: boolean;
+    claimedFor5Friends?: boolean;
+    amountFor5Friends?: number;
+    readyToClaimFor10Friends?: boolean;
+    claimedFor10Friends?: boolean;
+    amountFor10Friends?: number;
+    readyToClaimFor20Friends?: boolean;
+    claimedFor20Friends?: boolean;
+    amountFor20Friends?: number;
+    readyToClaimFor50Friends?: boolean;
+    claimedFor50Friends?: boolean;
+    amountFor50Friends?: number;
+    readyToClaimFor100Friends?: boolean;
+    claimedFor100Friends?: boolean;
+    amountFor100Friends?: number;
+};
+
+// *********** League Trek *********** //
+export type TLeagueTrek = {
+    id?: string;
+    userId?: string;
+    readyToClaimForBeginner?: boolean;
+    claimedForBeginner?: boolean;
+    amountForBeginner?: number;
+    readyToClaimForPlayer?: boolean;
+    claimedForPlayer?: boolean;
+    amountForPlayer?: number;
+    readyToClaimForFan?: boolean;
+    claimedForFan?: boolean;
+    amountForFan?: number;
+    readyToClaimForGamer?: boolean;
+    claimedForGamer?: boolean;
+    amountForGamer?: number;
+    readyToClaimForExpert?: boolean;
+    claimedForExpert?: boolean;
+    amountForExpert?: number;
+};

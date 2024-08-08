@@ -8,6 +8,9 @@ import { EnergyTankLevel } from './schema/energyTankLevel.schema';
 import { EnergyChargingLevel } from './schema/energyChargingLevel.schema';
 import { UserTokenInfo } from './schema/userTokenInfo.schema';
 import { ReferralClaim } from './schema/referralClaim.schema';
+import { SocialMediaTrek } from './schema/socialMediaTrek.schema';
+import { ReferralTrek } from './schema/referralTrek.schema';
+import { LeagueTrek } from './schema/leagueTrek.schema';
 
 
 //MYSQL connection //
@@ -24,8 +27,8 @@ export const sequelize = new Sequelize({
     dialect: 'sqlite',
     username: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
-    host: 'dpg-cqoib33v2p9s73aqjo2g-a',
-    models: [User, ReferralClaim, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
+    host: 'dpg-cqqhdo3v2p9s73b7s4rg-a',
+    models: [User,LeagueTrek ,ReferralTrek,SocialMediaTrek, ReferralClaim, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
     logging: false, // Disable logging; set to console.log to see SQL queries
 });
 
@@ -36,11 +39,9 @@ export const sequelize = new Sequelize({
 //     username: process.env.LOCAL_MYSQL_USER,
 //     password: process.env.LOCAL_MYSQL_PASSWORD,
 //     host: process.env.LOCAL_MYSQL_HOST,
-//     models: [User,ReferralClaim, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
+//     models: [User,LeagueTrek ,ReferralTrek ,SocialMediaTrek,ReferralClaim, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
 //     logging: false, // Disable logging; set to console.log to see SQL queries
 // });
-
-
 
 
 // MONGODB connection //

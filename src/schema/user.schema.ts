@@ -17,10 +17,10 @@ import { UserTokenInfo } from './userTokenInfo.schema';
       @Column(DataType.STRING)
       lastName?: string;
   
-      @Column({ type: DataType.STRING, allowNull: false, unique: true })
+      @Column({ type: DataType.STRING, allowNull: false })
       telegramId?: string;
 
-      @Column({ type: DataType.STRING, allowNull: false, unique: true })
+      @Column({ type: DataType.STRING, allowNull: false})
       referralCode!: string;
     
       @Column({type : DataType.UUID})

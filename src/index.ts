@@ -38,7 +38,7 @@ app.use('/api/v1',Route);
 
 // Optionally, you can handle errors and database connection
 sequelize.authenticate().then(async() => {
-    await sequelize.sync();
+    await sequelize.sync({ alter : true});
     console.log("Database connected successfully");
     app.listen(port, () => {
         try {
