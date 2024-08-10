@@ -92,19 +92,23 @@ export const createUser = async (userInfo: TUserModel) => {
       });
 
       await UserTokenInfo.update(
-        { 
-          currentBalance: literal(`currentBalance + ${process.env.SIGNUP_REFERRAL_AMOUNT}`),
-          turnOverBalance: literal(`turnOverBalance + ${process.env.SIGNUP_REFERRAL_AMOUNT}`),
-         },
-        { where: { userId : referredByUser?.id } }
+        {
+          currentBalance: literal(
+            `currentBalance + ${process.env.SIGNUP_REFERRAL_AMOUNT}`
+          ),
+          turnOverBalance: literal(
+            `turnOverBalance + ${process.env.SIGNUP_REFERRAL_AMOUNT}`
+          ),
+        },
+        { where: { userId: referredByUser?.id } }
       );
 
-      const totalCount = await ReferralClaim.count(
-        { where: { referrerId: referredByUser.id, claimed: true } }
-      );
+      const totalCount = await ReferralClaim.count({
+        where: { referrerId: referredByUser.id, claimed: true },
+      });
 
-      //Update the refferel count of the referred user 
-      updateRefferelCount(referredByUser?.id, totalCount)
+      //Update the refferel count of the referred user
+      updateRefferelCount(referredByUser?.id, totalCount);
     }
 
     // Create UserTokenInfo if user creation was successful
@@ -154,6 +158,7 @@ export const calculateEnergyTankBalance = async (
       where: {
         userId,
       },
+      raw: true,
     });
 
     const getEnergyTankLevel = await EnergyTankLevel.findOne({
@@ -190,6 +195,8 @@ export const calculateEnergyTankBalance = async (
         (updateFiled["dailyChargingBooster"] = 7);
       lastUpdateDate !== currentDate &&
         (updateFiled["dailyTappingBoosters"] = 7);
+
+      // console.log("userTOkenInfooooo", userTokenInfo);
 
       //check to update the current balance
       if (
@@ -386,30 +393,35 @@ export async function getLeagueTrekInfo(userId: string, statusId: string) {
       amountField: "amountForBeginner",
       readyToClaimField: "readyToClaimForBeginner",
       claimedField: "claimedForBeginner",
+      minRequired: 0,
     },
     {
       type: "Player",
       amountField: "amountForPlayer",
       readyToClaimField: "readyToClaimForPlayer",
       claimedField: "claimedForPlayer",
+      minRequired: 10000,
     },
     {
       type: "Fan",
       amountField: "amountForFan",
       readyToClaimField: "readyToClaimForFan",
       claimedField: "claimedForFan",
+      minRequired: 50000,
     },
     {
       type: "Gamer",
       amountField: "amountForGamer",
       readyToClaimField: "readyToClaimForGamer",
       claimedField: "claimedForGamer",
+      minRequired: 100000,
     },
     {
       type: "Expert",
       amountField: "amountForExpert",
       readyToClaimField: "readyToClaimForExpert",
       claimedField: "claimedForExpert",
+      minRequired: 500000,
     },
   ];
 
@@ -422,6 +434,7 @@ export async function getLeagueTrekInfo(userId: string, statusId: string) {
       claim: checkAvlLeagueTrek[level.readyToClaimField],
       claimed: checkAvlLeagueTrek[level.claimedField],
       currentLevel: level.type === checkAvlStatusInfo?.status ? true : false, // Example: Setting currentLevel based on some condition
+      minRequired: level.minRequired,
     })),
   };
 
@@ -442,7 +455,7 @@ export async function updateSocialTrek(data: any) {
       type: "FollowonTwitter",
       action: "claim",
       fieldName: "followTwitterClaimed",
-      amount : 100000
+      amount: 100000,
     },
     {
       type: "JoinTwitter",
@@ -453,7 +466,7 @@ export async function updateSocialTrek(data: any) {
       type: "JoinTwitter",
       action: "claim",
       fieldName: "joinTwitterClaimed",
-      amount : 100000
+      amount: 100000,
     },
     {
       type: "FollowonInstagram",
@@ -464,7 +477,7 @@ export async function updateSocialTrek(data: any) {
       type: "FollowonInstagram",
       action: "claim",
       fieldName: "followInstagramClaimed",
-      amount : 100000
+      amount: 100000,
     },
     {
       type: "JoinInstagram",
@@ -475,7 +488,7 @@ export async function updateSocialTrek(data: any) {
       type: "JoinInstagram",
       action: "claim",
       fieldName: "joinInstagramClaimed",
-      amount : 100000
+      amount: 100000,
     },
     {
       type: "FollowonYouTube",
@@ -486,7 +499,7 @@ export async function updateSocialTrek(data: any) {
       type: "FollowonYouTube",
       action: "claim",
       fieldName: "followYouTubeClaimed",
-      amount : 100000
+      amount: 100000,
     },
     {
       type: "JoinYouTube",
@@ -497,7 +510,7 @@ export async function updateSocialTrek(data: any) {
       type: "JoinYouTube",
       action: "claim",
       fieldName: "joinYouTubeClaimed",
-      amount : 100000
+      amount: 100000,
     },
     {
       type: "FollowonTelegram",
@@ -508,7 +521,7 @@ export async function updateSocialTrek(data: any) {
       type: "FollowonTelegram",
       action: "claim",
       fieldName: "followTelegramClaimed",
-      amount : 100000
+      amount: 100000,
     },
     {
       type: "JoinTelegram",
@@ -519,7 +532,7 @@ export async function updateSocialTrek(data: any) {
       type: "JoinTelegram",
       action: "claim",
       fieldName: "joinTelegramClaimed",
-      amount : 100000
+      amount: 100000,
     },
   ];
 
@@ -535,78 +548,127 @@ export async function updateSocialTrek(data: any) {
   // Determine the field name to update
   const fieldName = field.fieldName;
 
-  const amount = field.amount
+  const amount = field.amount;
 
   const updatedSocialMediaTrek = await SocialMediaTrek.update(
     { [fieldName]: true }, // Assuming you want to set the field to true
-    { where: { userId } },
+    { where: { userId } }
   );
 
-  if(action == 'claim') {
+  if (action == "claim") {
     await UserTokenInfo.update(
-      { 
+      {
         currentBalance: literal(`currentBalance + ${amount}`),
         turnOverBalance: literal(`turnOverBalance + ${amount}`),
-       },
+      },
       { where: { userId } }
-    )
+    );
   }
 
   return updatedSocialMediaTrek;
-
-};
+}
 
 //******************* Update Referral Trek Info ******************* //
-export async function updateReferTrek(data:any) {
-   const { userId, type, action } = data;
-   const referTrekList = [
-    { type: 1, action: "claim", fieldName: "claimedFor1Friends", amount : 10000},
-    { type: 5, action: "claim", fieldName: "claimedFor5Friends", amount : 500000},
-    { type: 10, action: "claim", fieldName: "claimedFor10Friends", amount : 1000000},
-    { type: 20, action: "claim", fieldName: "claimedFor20Friends", amount : 2000000},
-    { type: 50, action: "claim", fieldName: "claimedFor50Friends", amount : 5000000},
-    { type: 100, action: "claim", fieldName: "claimedFor100Friends", amount : 10000000},
+export async function updateReferTrek(data: any) {
+  const { userId, type, action } = data;
+  const referTrekList = [
+    {
+      type: 1,
+      action: "claim",
+      fieldName: "claimedFor1Friends",
+      amount: 10000,
+    },
+    {
+      type: 5,
+      action: "claim",
+      fieldName: "claimedFor5Friends",
+      amount: 500000,
+    },
+    {
+      type: 10,
+      action: "claim",
+      fieldName: "claimedFor10Friends",
+      amount: 1000000,
+    },
+    {
+      type: 20,
+      action: "claim",
+      fieldName: "claimedFor20Friends",
+      amount: 2000000,
+    },
+    {
+      type: 50,
+      action: "claim",
+      fieldName: "claimedFor50Friends",
+      amount: 5000000,
+    },
+    {
+      type: 100,
+      action: "claim",
+      fieldName: "claimedFor100Friends",
+      amount: 10000000,
+    },
   ];
 
   const field = referTrekList.filter(
     (item) => item.type === type && item.action === action
   )[0];
 
-  console.log("field ********************************", field)
+  console.log("field ********************************", field);
 
   if (!field) {
-    return null
+    return null;
   }
 
   const fieldName = field.fieldName;
-  const amount = field.amount
+  const amount = field.amount;
 
-  const updatedReferralTrek =  await ReferralTrek.update(
-      { [fieldName]: true }, // Assuming you want to set the field to true
-      { where: { userId } }
-    );
+  const updatedReferralTrek = await ReferralTrek.update(
+    { [fieldName]: true }, // Assuming you want to set the field to true
+    { where: { userId } }
+  );
 
-    await UserTokenInfo.update(
-      { 
-        currentBalance: literal(`currentBalance + ${amount}`),
-        turnOverBalance: literal(`turnOverBalance + ${amount}`),
-       },
-      { where: { userId } }
-    )
+  await UserTokenInfo.update(
+    {
+      currentBalance: literal(`currentBalance + ${amount}`),
+      turnOverBalance: literal(`turnOverBalance + ${amount}`),
+    },
+    { where: { userId } }
+  );
 
- return updatedReferralTrek 
-};
+  return updatedReferralTrek;
+}
 
 //******************* Update League Trek Info ******************* //
-export async function updateLeagueTrek(data:any) {
+export async function updateLeagueTrek(data: any) {
   const { userId, type, action } = data;
 
   const leagueTrekList = [
-    { type: "Beginner", action: "claim", fieldName: "claimedForBeginner", amount: 2000 },
-    { type: "Player", action: "claim", fieldName: "claimedForPlayer", amount: 5000 },
+    {
+      type: "Beginner",
+      action: "claim",
+      fieldName: "claimedForBeginner",
+      amount: 2000,
+    },
+    {
+      type: "Player",
+      action: "claim",
+      fieldName: "claimedForPlayer",
+      amount: 5000,
+    },
     { type: "Fan", action: "claim", fieldName: "claimedForFan", amount: 10000 },
-    { type: "Gamer", action: "claim", fieldName: "claimedForGamer", amount: 50000 },
-    { type: "Expert", action: "claim", fieldName: "claimedForExpert", amount: 100000 },
+    {
+      type: "Gamer",
+      action: "claim",
+      fieldName: "claimedForGamer",
+      amount: 50000,
+    },
+    {
+      type: "Expert",
+      action: "claim",
+      fieldName: "claimedForExpert",
+      amount: 100000,
+    },
   ];
 
   const field = leagueTrekList.filter(
@@ -626,81 +688,78 @@ export async function updateLeagueTrek(data:any) {
   );
 
   await UserTokenInfo.update(
-    { 
+    {
       currentBalance: literal(`currentBalance + ${amount}`),
       turnOverBalance: literal(`turnOverBalance + ${amount}`),
-     },
+    },
     { where: { userId } }
-  )
+  );
 
   return updatedLeagueTrek;
-};
+}
 
 //******************* Update Refferel Count ******************* //
 async function updateRefferelCount(userId: string, totalReferral: number) {
   const referTrekList = [
-    { type: 1, fieldName: "readyToClaimFor1Friends", amount : 10000},
-    { type: 5, fieldName: "readyToClaimFor5Friends", amount : 500000},
-    { type: 10, fieldName: "readyToClaimFor10Friends", amount : 1000000},
-    { type: 20, fieldName: "readyToClaimFor20Friends", amount : 2000000},
-    { type: 50, fieldName: "readyToClaimFor50Friends", amount : 5000000},
-    { type: 100, fieldName: "readyToClaimFor100Friends", amount : 10000000},
+    { type: 1, fieldName: "readyToClaimFor1Friends", amount: 10000 },
+    { type: 5, fieldName: "readyToClaimFor5Friends", amount: 500000 },
+    { type: 10, fieldName: "readyToClaimFor10Friends", amount: 1000000 },
+    { type: 20, fieldName: "readyToClaimFor20Friends", amount: 2000000 },
+    { type: 50, fieldName: "readyToClaimFor50Friends", amount: 5000000 },
+    { type: 100, fieldName: "readyToClaimFor100Friends", amount: 10000000 },
   ];
-  
+
   const referralTrek = await ReferralTrek.findOne({
-    where: { userId: userId }
+    where: { userId: userId },
   });
-  
+
   if (!referralTrek) {
     throw new Error(`ReferralTrek record not found for userId: ${userId}`);
   }
-  
+
   // Update fields based on the totalReferral count
   for (const { type, fieldName } of referTrekList) {
     if (totalReferral >= type) {
       (referralTrek as any)[fieldName] = true; // Dynamically set field value to true
     }
   }
-  
+
   // Save the updated record
-  await referralTrek.save();  
+  await referralTrek.save();
 }
 
 //******************* Check league/ status level and update it ******************* //
 export async function updateLeagueLevel(telegramId: string) {
-
   const checkAvlUser = await User.findOne({
     where: { telegramId },
-  })
+  });
 
-  if(!checkAvlUser ) {
-    return null
+  if (!checkAvlUser) {
+    return null;
   }
   const checkAvlUserTokenInfo = await UserTokenInfo.findOne({
     where: { userId: checkAvlUser?.id },
-    attributes: ["currentBalance", "statusId", "turnOverBalance"]
+    attributes: ["currentBalance", "statusId", "turnOverBalance"],
   });
 
-  console.log("Balance info: " ,checkAvlUserTokenInfo)
+  console.log("Balance info: ", checkAvlUserTokenInfo);
 
-  const checkAvlRequiredStatsInfo = await StatusInfo.findOne(
-    {
-      where : {
-        minRequired :{
-          [Op.lte] : checkAvlUserTokenInfo?.turnOverBalance
-        },
-        maxRequired : {
-          [Op.gte] : checkAvlUserTokenInfo?.turnOverBalance
-        }
-      }
-    }
-  );
+  const checkAvlRequiredStatsInfo = await StatusInfo.findOne({
+    where: {
+      minRequired: {
+        [Op.lte]: checkAvlUserTokenInfo?.turnOverBalance,
+      },
+      maxRequired: {
+        [Op.gte]: checkAvlUserTokenInfo?.turnOverBalance,
+      },
+    },
+  });
 
-  console.log("heck ccccc", checkAvlRequiredStatsInfo)
+  console.log("heck ccccc", checkAvlRequiredStatsInfo);
 
   const updateStatus = await UserTokenInfo.update(
     { statusId: checkAvlRequiredStatsInfo?.id },
-    { where: { userId : checkAvlUser.id } }
+    { where: { userId: checkAvlUser.id } }
   );
 
   const leagueTrekList = [
@@ -723,7 +782,6 @@ export async function updateLeagueLevel(telegramId: string) {
 
   const updatedLeagueTrek = await LeagueTrek.update(
     { [fieldName]: true },
-    { where: { userId : checkAvlUser.id } }
+    { where: { userId: checkAvlUser.id } }
   );
-
 }
