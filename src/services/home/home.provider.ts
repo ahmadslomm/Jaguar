@@ -50,17 +50,22 @@ export const addTokenbalance = async (req: AuthRequest) => {
         const userTokenInfo = await UserTokenInfo.findOne({where :{ userId : user?.id }});
         const currentTime = new Date();
         if(userTokenInfo) {
-            await userTokenInfo.update(
-                {
-                    currentBalance: literal(`currentBalance + ${token}`),
-                    turnOverBalance: literal(`turnOverBalance + ${token}`),
-                    currentTankBalance: literal(`currentTankBalance - ${token}`),
-                    tankUpdateTime: currentTime
-                },
-                { where: { userId : user?.id } }
-            )
-            const updateUserTokenInfo = await user.reload();
-            return GenResObj(Code.OK, true, "Token balance added successfully.", updateUserTokenInfo)
+            // await userTokenInfo.update(
+            //     {
+            //         currentBalance: literal(`currentBalance + ${token}`),
+            //         turnOverBalance: literal(`turnOverBalance + ${token}`),
+            //         currentTankBalance: literal(`currentTankBalance - ${token}`),
+            //         tankUpdateTime: currentTime
+            //     },
+            //     { where: { userId : user?.id } }
+            // )
+            await userTokenInfo.increment('currentBalance', { by: token });
+            await userTokenInfo.increment('turnOverBalance', { by: token });
+            await userTokenInfo.decrement('currentTankBalance', { by: token });
+            await userTokenInfo.update({ tankUpdateTime: currentTime });
+            const updatedUserTokenInfo = await userTokenInfo.reload();
+            // const updateUserTokenInfo = await user.reload();
+            return GenResObj(Code.OK, true, "Token balance added successfully.", updatedUserTokenInfo)
         }
         // const updateUserTokenInfo = await UserTokenInfo.findOneAndUpdate({ userId : new Types.ObjectId(user?._id) }, { $inc : { currentBalance : token, turnOverBalance: token}}, { new : true});
         return GenResObj(Code.NOT_FOUND, false, "Something went wrong.", null )

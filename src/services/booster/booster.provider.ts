@@ -10,6 +10,7 @@ import { EnergyChargingLevel } from "../../schema/energyChargingLevel.schema";
 import { Types } from "mongoose";
 import { literal, Op } from "sequelize";
 import sequelize from "sequelize/types/sequelize";
+import { updateTankCapacity } from "../../helper/function";
 
 export const getBoosterInfo = async (req: AuthRequest) => {
   try {
@@ -46,6 +47,7 @@ export const getBoosterInfo = async (req: AuthRequest) => {
       });
 
     const resObj = {
+      totalCoins : checkAvlUserTokenInfo?.currentBalance,
       dailyChargingBooster: checkAvlUserTokenInfo?.dailyChargingBooster,
       dailyTappingBoosters: checkAvlUserTokenInfo?.dailyTappingBoosters,
       avlNextMultiTapLevel: checkAvlNextAvlMultitapLevel,
@@ -83,6 +85,9 @@ export const updateDailyBooster = async (req: AuthRequest) => {
       await checkAvlUserTokenInfo.update({
         [boosterType]: literal(`${boosterType} - 1`),
       });
+ 
+      boosterType == 'dailyChargingBooster' && (await updateTankCapacity(checkAvlUser?.id));
+
       const updateBoosterInfo = await checkAvlUserTokenInfo.reload();
       // const updateBooster = await UserTokenInfo.findOneAndUpdate({ userId : new Types.ObjectIdcheckAvlUser?.i) }, { $inc : { [boosterType] : -1 } }, { new : true });
       return GenResObj(
@@ -134,9 +139,13 @@ export const updatelevel = async (req: AuthRequest) => {
       "LEVEL-" +
       (parseInt(checkAvlLevelNameInfUserTokenInfo?.split("-")[1]) + 1);
 
-    const checkAvlNextLevelInfo: any = await collectionType.findOne({
-      levelName: updatedNextLevelName,
-    });
+      console.log("first level name ", checkAvlLevelNameInfUserTokenInfo, " updated", updatedNextLevelName)
+
+    const checkAvlNextLevelInfo: any = await collectionType.findOne(
+      { where : {
+        levelName: updatedNextLevelName,
+      }}
+    );
 
     if (checkAvlNextLevelInfo.amount <= checkAvlUserTokenInfo.currentBalance) {
       const udpatedCurrenetBalance =
@@ -155,6 +164,8 @@ export const updatelevel = async (req: AuthRequest) => {
         }
       );
 
+      console.log("Updated dta: " + udpatedCurrenetBalance)
+
       // const updateUserTokenInfo:any = await UserTokenInfo.findOneAndUpdate({ userId : new Types.ObjectId(checkAvlUser?._id) }, { $set : { [boosterType] : updatedNextLevelName, currentBalance : udpatedCurrenetBalance} }, { new : true });
 
       return GenResObj(
@@ -164,6 +175,7 @@ export const updatelevel = async (req: AuthRequest) => {
         updateUserTokenInfo
       );
     } else {
+      console.log("gettng in to the else condition failed")
       return GenResObj(Code.NOT_FOUND, false, "Insufficient balance.", null);
     }
     return GenResObj(Code.NOT_FOUND, false, "Something went wrong", null);

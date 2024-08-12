@@ -154,7 +154,7 @@ export const calculateEnergyTankBalance = async (
 ) => {
   try {
     console.log("userID: " + userId);
-    const userTokenInfo = await UserTokenInfo.findOne({
+    const userTokenInfo: any = await UserTokenInfo.findOne({
       where: {
         userId,
       },
@@ -175,19 +175,24 @@ export const calculateEnergyTankBalance = async (
 
     const currentTime = new Date();
 
-    const lastUpdateTime = userTokenInfo?.tankUpdateTime;
+    let lastUpdateTime = userTokenInfo?.tankUpdateTime;
 
     let updateFiled: any = { tankUpdateTime: currentTime };
 
     // console.log("0000000000", userTokenInfo?.totalTankCapacity, userTokenInfo?.currentTankBalance)
     console.log(
       "Getting the last update time for ",
+      new Date(),
       lastUpdateTime,
       currentTime
     );
     if (lastUpdateTime) {
       const lastUpdateDate = new Date(lastUpdateTime).setHours(0, 0, 0, 0);
       const currentDate = new Date(currentTime).setHours(0, 0, 0, 0);
+
+      if (typeof lastUpdateTime === "string") {
+        lastUpdateTime = new Date(lastUpdateTime);
+      }
 
       //   console.log("Getting dates : ", lastUpdateDate, currentDate )
 
@@ -259,6 +264,24 @@ function generateReferralCode(telegramId: string) {
 
   return referralCode ? referralCode : undefined;
 }
+
+//******************* Get Social Media Trek Info ******************* //
+export const updateTankCapacity = async (userId: string | undefined) => {
+  try {
+    const checkAvlUserTokenInfo = await UserTokenInfo.findOne({
+      where: { userId: userId },
+      raw: true,
+    });
+    const checkAvlEnergyTanKLevel = await EnergyTankLevel.findOne({
+      where: { levelName: checkAvlUserTokenInfo?.energyTankLevel },
+    });
+    const updatedTankCapacity = await UserTokenInfo.update(
+      { currentTankBalance: checkAvlEnergyTanKLevel?.tankCapacity },
+      { where: { userId } }
+    );
+    return updatedTankCapacity;
+  } catch (error) {}
+};
 
 //******************* Get Social Media Trek Info ******************* //
 export async function getSocialMediaTrekInfo(userId: string | undefined) {
@@ -425,17 +448,40 @@ export async function getLeagueTrekInfo(userId: string, statusId: string) {
     },
   ];
 
-  // Generate the response in the desired format
+  let currentFlagSet = false;
+
   const response = {
-    League: levels.map((level: any) => ({
-      type: level.type,
-      level: level.type, // Assuming level field is the same as type
-      coin: checkAvlLeagueTrek[level.amountField], // Format number with commas
-      claim: checkAvlLeagueTrek[level.readyToClaimField],
-      claimed: checkAvlLeagueTrek[level.claimedField],
-      currentLevel: level.type === checkAvlStatusInfo?.status ? true : false, // Example: Setting currentLevel based on some condition
-      minRequired: level.minRequired,
-    })),
+    League: levels.map((level: any) => {
+      const isCurrentLevel = level.type === checkAvlStatusInfo?.status;
+      const currentFlag = currentFlagSet ? true : false;
+
+      // If the current level is found and currentFlag hasn't been set yet
+      if (isCurrentLevel && !currentFlagSet) {
+        currentFlagSet = true; // Set the flag to true for the next record
+        return {
+          type: level.type,
+          level: level.type,
+          coin: checkAvlLeagueTrek[level.amountField],
+          claim: checkAvlLeagueTrek[level.readyToClaimField],
+          claimed: checkAvlLeagueTrek[level.claimedField],
+          currentLevel: true,
+          currentFlag: false, // No flag for the current level
+          minRequired: level.minRequired,
+        };
+      }
+
+      // For all other records
+      return {
+        type: level.type,
+        level: level.type,
+        coin: checkAvlLeagueTrek[level.amountField],
+        claim: checkAvlLeagueTrek[level.readyToClaimField],
+        claimed: checkAvlLeagueTrek[level.claimedField],
+        currentLevel: false,
+        currentFlag, // The next record after currentLevel will have currentFlag true
+        minRequired: level.minRequired,
+      };
+    }),
   };
 
   return response;

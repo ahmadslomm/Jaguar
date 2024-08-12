@@ -27,7 +27,7 @@ export const sequelize = new Sequelize({
     dialect: 'sqlite',
     username: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
-    host: 'dpg-cqqhdo3v2p9s73b7s4rg-a',
+    host: 'dpg-cqt3vgij1k6c73d96nr0-a',
     models: [User,LeagueTrek ,ReferralTrek,SocialMediaTrek, ReferralClaim, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
     logging: false, // Disable logging; set to console.log to see SQL queries
 });
