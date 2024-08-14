@@ -22,26 +22,26 @@ if (!process.env.MYSQL_USER || !process.env.MYSQL_HOST || !process.env.MYSQL_PAS
 
 //********** PRODUCTION DB CONNECTION ********** //
 
-// export const sequelize = new Sequelize({
-//     database: process.env.MYSQL_DATABASE,
-//     dialect: 'sqlite',
-//     username: process.env.MYSQL_USER,
-//     password: process.env.MYSQL_PASSWORD,
-//     host: 'dpg-cqt3vgij1k6c73d96nr0-a',
-//     models: [User,LeagueTrek ,ReferralTrek,SocialMediaTrek, ReferralClaim, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
-//     logging: false, // Disable logging; set to console.log to see SQL queries
-// });
-
-//********** LOCAL DB CONNECTION ********** //
 export const sequelize = new Sequelize({
-    database: process.env.LOCAL_MYSQL_DATABASE,
-    dialect: 'mysql',
-    username: process.env.LOCAL_MYSQL_USER,
-    password: process.env.LOCAL_MYSQL_PASSWORD,
-    host: process.env.LOCAL_MYSQL_HOST,
-    models: [User,LeagueTrek ,ReferralTrek ,SocialMediaTrek,ReferralClaim, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
+    database: process.env.MYSQL_DATABASE,
+    dialect: 'sqlite',
+    username: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    host: 'dpg-cqt3vgij1k6c73d96nr0-a',
+    models: [User,LeagueTrek ,ReferralTrek,SocialMediaTrek, ReferralClaim, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
     logging: false, // Disable logging; set to console.log to see SQL queries
 });
+
+//********** LOCAL DB CONNECTION ********** //
+// export const sequelize = new Sequelize({
+//     database: process.env.LOCAL_MYSQL_DATABASE,
+//     dialect: 'mysql',
+//     username: process.env.LOCAL_MYSQL_USER,
+//     password: process.env.LOCAL_MYSQL_PASSWORD,
+//     host: process.env.LOCAL_MYSQL_HOST,
+//     models: [User,LeagueTrek ,ReferralTrek ,SocialMediaTrek,ReferralClaim, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
+//     logging: false, // Disable logging; set to console.log to see SQL queries
+// });
 
 
 // MONGODB connection //
