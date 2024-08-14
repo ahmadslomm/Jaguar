@@ -121,6 +121,7 @@ export const createUser = async (userInfo: TUserModel) => {
         energyTankLevel: energyTankLevel?.levelName, // Ensure this is correctly assigned
         energyChargingLevel: energyChargingLevel?.levelName, // Ensure this is correctly assigned
         tankUpdateTime: new Date(), // Current timestamp
+        currentTankBalance : 500
         // ...(referredByUser && {
         //   turnOverBalance: process.env.SIGNUP_REFERRAL_AMOUNT,
         // }),
@@ -292,41 +293,45 @@ export async function getSocialMediaTrekInfo(userId: string | undefined) {
   const socialMediaTasks = [
     {
       type: "FollowonTwitter",
+      name: "Follow on Twitter",
       follow: checkAvlSocialMediaTrek?.followTwitter,
       claimed: checkAvlSocialMediaTrek?.followTwitterClaimed,
     },
-    {
-      type: "JoinTwitter",
-      follow: checkAvlSocialMediaTrek?.joinTwitter,
-      claimed: checkAvlSocialMediaTrek?.joinTwitterClaimed,
-    },
+    // {
+    //   type: "JoinTwitter",
+    //   follow: checkAvlSocialMediaTrek?.joinTwitter,
+    //   claimed: checkAvlSocialMediaTrek?.joinTwitterClaimed,
+    // },
     {
       type: "FollowonInstagram",
+      name: "Follow on Instagram",
       follow: checkAvlSocialMediaTrek?.followInstagram,
       claimed: checkAvlSocialMediaTrek?.followInstagramClaimed,
     },
-    {
-      type: "JoinInstagram",
-      follow: checkAvlSocialMediaTrek?.joinInstagram,
-      claimed: checkAvlSocialMediaTrek?.joinInstagramClaimed,
-    },
-    {
-      type: "FollowonYouTube",
-      follow: checkAvlSocialMediaTrek?.followYouTube,
-      claimed: checkAvlSocialMediaTrek?.followYouTubeClaimed,
-    },
+    // {
+    //   type: "JoinInstagram",
+    //   follow: checkAvlSocialMediaTrek?.joinInstagram,
+    //   claimed: checkAvlSocialMediaTrek?.joinInstagramClaimed,
+    // },
+    // {
+    //   type: "FollowonYouTube",
+    //   follow: checkAvlSocialMediaTrek?.followYouTube,
+    //   claimed: checkAvlSocialMediaTrek?.followYouTubeClaimed,
+    // },
     {
       type: "JoinYouTube",
+      name: "Join YouTube",
       follow: checkAvlSocialMediaTrek?.joinYouTube,
       claimed: checkAvlSocialMediaTrek?.joinYouTubeClaimed,
     },
-    {
-      type: "FollowonTelegram",
-      follow: checkAvlSocialMediaTrek?.followTelegram,
-      claimed: checkAvlSocialMediaTrek?.followTelegramClaimed,
-    },
+    // {
+    //   type: "FollowonTelegram",
+    //   follow: checkAvlSocialMediaTrek?.followTelegram,
+    //   claimed: checkAvlSocialMediaTrek?.followTelegramClaimed,
+    // },
     {
       type: "JoinTelegram",
+      name: "Join Telegram",
       follow: checkAvlSocialMediaTrek?.joinTelegram,
       claimed: checkAvlSocialMediaTrek?.joinTelegramClaimed,
     },
@@ -334,6 +339,7 @@ export async function getSocialMediaTrekInfo(userId: string | undefined) {
 
   return socialMediaTasks.map((task) => ({
     type: task.type,
+    name : task.name,
     coin: checkAvlSocialMediaTrek?.amount || 100000,
     follow: task.follow,
     ...(!task.follow &&
@@ -350,44 +356,50 @@ export async function getReferralTrekInfo(userId: string | undefined) {
 
   const response = {
     refer: [
-      {
+      (!checkAvlReferralTrek?.claimedFor1Friends && {
         type: 1,
         coin: checkAvlReferralTrek?.amountFor1Friends,
         claim: checkAvlReferralTrek?.readyToClaimFor1Friends,
         claimed: checkAvlReferralTrek?.claimedFor1Friends,
-      },
-      {
+      }),
+      (!checkAvlReferralTrek?.claimedFor5Friends && {
         type: 5,
         coin: checkAvlReferralTrek?.amountFor5Friends,
         claim: checkAvlReferralTrek?.readyToClaimFor5Friends,
         claimed: checkAvlReferralTrek?.claimedFor5Friends,
-      },
-      {
+      }),
+      (!checkAvlReferralTrek?.claimedFor10Friends && {
         type: 10,
         coin: checkAvlReferralTrek?.amountFor10Friends,
         claim: checkAvlReferralTrek?.readyToClaimFor10Friends,
         claimed: checkAvlReferralTrek?.claimedFor10Friends,
-      },
-      {
+      }),
+      (!checkAvlReferralTrek?.claimedFor20Friends &&{
         type: 20,
         coin: checkAvlReferralTrek?.amountFor20Friends,
         claim: checkAvlReferralTrek?.readyToClaimFor20Friends,
         claimed: checkAvlReferralTrek?.claimedFor20Friends,
-      },
-      {
+      }),
+      (!checkAvlReferralTrek?.claimedFor50Friends &&{
         type: 50,
         coin: checkAvlReferralTrek?.amountFor50Friends,
         claim: checkAvlReferralTrek?.readyToClaimFor50Friends,
         claimed: checkAvlReferralTrek?.claimedFor50Friends,
-      },
-      {
+      }),
+      (!checkAvlReferralTrek?.claimedFor100Friends &&{
         type: 100,
         coin: checkAvlReferralTrek?.amountFor100Friends,
         claim: checkAvlReferralTrek?.readyToClaimFor100Friends,
         claimed: checkAvlReferralTrek?.claimedFor100Friends,
-      },
-    ],
+      }),
+    ]
+    .filter(Boolean)
+    .slice(0, 4)
   };
+
+
+
+  console.log("Geting for refere :::",response) 
 
   return response;
 }
@@ -417,6 +429,7 @@ export async function getLeagueTrekInfo(userId: string, statusId: string) {
       readyToClaimField: "readyToClaimForBeginner",
       claimedField: "claimedForBeginner",
       minRequired: 0,
+      maxRequired:10000
     },
     {
       type: "Player",
@@ -424,6 +437,7 @@ export async function getLeagueTrekInfo(userId: string, statusId: string) {
       readyToClaimField: "readyToClaimForPlayer",
       claimedField: "claimedForPlayer",
       minRequired: 10000,
+      maxRequired: 50000
     },
     {
       type: "Fan",
@@ -431,6 +445,7 @@ export async function getLeagueTrekInfo(userId: string, statusId: string) {
       readyToClaimField: "readyToClaimForFan",
       claimedField: "claimedForFan",
       minRequired: 50000,
+      maxRequired: 100000
     },
     {
       type: "Gamer",
@@ -438,6 +453,7 @@ export async function getLeagueTrekInfo(userId: string, statusId: string) {
       readyToClaimField: "readyToClaimForGamer",
       claimedField: "claimedForGamer",
       minRequired: 100000,
+      maxRequired: 500000
     },
     {
       type: "Expert",
@@ -445,6 +461,7 @@ export async function getLeagueTrekInfo(userId: string, statusId: string) {
       readyToClaimField: "readyToClaimForExpert",
       claimedField: "claimedForExpert",
       minRequired: 500000,
+      maxRequired: 1000000
     },
   ];
 
@@ -456,32 +473,52 @@ export async function getLeagueTrekInfo(userId: string, statusId: string) {
       const currentFlag = currentFlagSet ? true : false;
 
       // If the current level is found and currentFlag hasn't been set yet
-      if (isCurrentLevel && !currentFlagSet) {
-        currentFlagSet = true; // Set the flag to true for the next record
+      if(!checkAvlLeagueTrek[level.claimedField]) {
+        if (isCurrentLevel && !currentFlagSet) {
+          currentFlagSet = true; // Set the flag to true for the next record
+          return {
+            type: level.type,
+            level: level.type,
+            coin: checkAvlLeagueTrek[level.amountField],
+            claim: checkAvlLeagueTrek[level.readyToClaimField],
+            claimed: checkAvlLeagueTrek[level.claimedField],
+            currentLevel: false,
+            // currentFlag: false, // No flag for the current level
+            minRequired: level.minRequired,
+            maxRequired: level.maxRequired,
+          };
+        }
+        if (!isCurrentLevel && currentFlagSet) {
+          currentFlagSet = false; // Set the flag to true for the next record
+          return {
+            type: level.type,
+            level: level.type,
+            coin: checkAvlLeagueTrek[level.amountField],
+            claim: checkAvlLeagueTrek[level.readyToClaimField],
+            claimed: checkAvlLeagueTrek[level.claimedField],
+            currentLevel: true,
+            // currentFlag: false, // No flag for the current level
+            minRequired: level.minRequired,
+            maxRequired: level.maxRequired,
+          };
+        }
+  
+        // For all other records
         return {
           type: level.type,
           level: level.type,
           coin: checkAvlLeagueTrek[level.amountField],
           claim: checkAvlLeagueTrek[level.readyToClaimField],
           claimed: checkAvlLeagueTrek[level.claimedField],
-          currentLevel: true,
-          currentFlag: false, // No flag for the current level
+          currentLevel: false,
+          // currentFlag, // The next record after currentLevel will have currentFlag true
           minRequired: level.minRequired,
+          maxRequired: level.maxRequired,
         };
       }
-
-      // For all other records
-      return {
-        type: level.type,
-        level: level.type,
-        coin: checkAvlLeagueTrek[level.amountField],
-        claim: checkAvlLeagueTrek[level.readyToClaimField],
-        claimed: checkAvlLeagueTrek[level.claimedField],
-        currentLevel: false,
-        currentFlag, // The next record after currentLevel will have currentFlag true
-        minRequired: level.minRequired,
-      };
-    }),
+      return null
+    }).filter(Boolean)
+    .slice(0,5)
   };
 
   return response;
@@ -831,3 +868,4 @@ export async function updateLeagueLevel(telegramId: string) {
     { where: { userId: checkAvlUser.id } }
   );
 }
+

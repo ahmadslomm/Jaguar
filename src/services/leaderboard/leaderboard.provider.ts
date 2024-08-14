@@ -39,7 +39,7 @@ export const getLederBoardInfo = async (req: AuthRequest) => {
               }
             ],
             order: [['currentBalance', 'DESC']],
-            limit: 50
+            limit: 8
           });
 
           const teamData = topUserTokenInfos

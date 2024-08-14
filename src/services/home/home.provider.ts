@@ -44,7 +44,7 @@ export const getUserTokenInfo = async(req: AuthRequest) => {
 export const addTokenbalance = async (req: AuthRequest) => {
     try {
         const { telegramId } = req;
-        const { token } = req.body;
+        const { token,  currentTankBalance} = req.body;
         // console.log("object")
         const user :any= await User.findOne({where :{ telegramId }});
         const userTokenInfo = await UserTokenInfo.findOne({where :{ userId : user?.id }});
@@ -61,8 +61,8 @@ export const addTokenbalance = async (req: AuthRequest) => {
             // )
             await userTokenInfo.increment('currentBalance', { by: token });
             await userTokenInfo.increment('turnOverBalance', { by: token });
-            await userTokenInfo.decrement('currentTankBalance', { by: token });
-            await userTokenInfo.update({ tankUpdateTime: currentTime });
+            // await userTokenInfo.decrement('currentTankBalance', { by: token });
+            await userTokenInfo.update({ tankUpdateTime: currentTime, currentTankBalance });
             const updatedUserTokenInfo = await userTokenInfo.reload();
             // const updateUserTokenInfo = await user.reload();
             return GenResObj(Code.OK, true, "Token balance added successfully.", updatedUserTokenInfo)
