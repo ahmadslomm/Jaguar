@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const booster_controller_1 = require("./booster.controller");
+const jsonToken_1 = require("../../middleware/authentication/jsonToken");
+const router = (0, express_1.Router)();
+router.route('/get-booster-info').get((0, jsonToken_1.authCheck)(), booster_controller_1.BoosterController.getBoosterInfo);
+router.route('/update-daily-booster').post((0, jsonToken_1.authCheck)(), booster_controller_1.BoosterController.updateDailyBooster);
+router.route('/update-level').post((0, jsonToken_1.authCheck)(), booster_controller_1.BoosterController.updatelevel);
+exports.default = router;
