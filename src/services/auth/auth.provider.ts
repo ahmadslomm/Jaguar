@@ -35,7 +35,9 @@ export const register = async (req: Request) => {
 export const getUserRegistration = async (req: Request) => {
   try {
 
-    const userData = await User.findAll();
+    const userData = await User.findAll({ raw : true});
+
+    console.log("getting user token ifo registration", userData)
 
     return GenResObj(
       Code.CREATED,

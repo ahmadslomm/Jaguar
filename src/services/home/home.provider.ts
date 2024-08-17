@@ -6,7 +6,7 @@ import {StatusInfo} from "../../schema/statusInfo.schema";
 import {UserTokenInfo} from "../../schema/userTokenInfo.schema";
 import { HttpStatusCodes as Code } from "../../utils/Enum";
 import { GenResObj } from '../../utils/ResponseFormat';
-import { calculateEnergyTankBalance } from "../../helper/function";
+import { calculateEnergyTankBalance, updateLeagueLevel } from "../../helper/function";
 import { Types } from "mongoose";
 import { literal } from "sequelize";
 
@@ -64,6 +64,8 @@ export const addTokenbalance = async (req: AuthRequest) => {
             // await userTokenInfo.decrement('currentTankBalance', { by: token });
             await userTokenInfo.update({ tankUpdateTime: currentTime, currentTankBalance });
             const updatedUserTokenInfo = await userTokenInfo.reload();
+
+            await updateLeagueLevel(telegramId);
             // const updateUserTokenInfo = await user.reload();
             return GenResObj(Code.OK, true, "Token balance added successfully.", updatedUserTokenInfo)
         }

@@ -394,7 +394,7 @@ export async function getReferralTrekInfo(userId: string | undefined) {
       }),
     ]
     .filter(Boolean)
-    .slice(0, 4)
+    .slice(0, 5)
   };
 
 
@@ -812,7 +812,7 @@ async function updateRefferelCount(userId: string, totalReferral: number) {
 }
 
 //******************* Check league/ status level and update it ******************* //
-export async function updateLeagueLevel(telegramId: string) {
+export async function updateLeagueLevel(telegramId: string | undefined) {
   const checkAvlUser = await User.findOne({
     where: { telegramId },
   });
