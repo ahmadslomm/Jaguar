@@ -9,115 +9,115 @@ export class LeagueTrek extends Model<TLeagueTrek> {
         type: DataType.UUID, 
         defaultValue: DataType.UUIDV4,
     })
-    id!: string;
+    declare id?: string;
 
     @ForeignKey(() => User)
     @Column({
         type: DataType.UUID,
         allowNull: false,
     })
-    userId!: string;
+    declare userId?: string;
 
     // Beginner level fields
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    readyToClaimForBeginner!: boolean;
+    declare readyToClaimForBeginner?: boolean;
 
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    claimedForBeginner!: boolean;
+    declare claimedForBeginner?: boolean;
 
     @Column({
         type: DataType.INTEGER,
         defaultValue: 2000,
     })
-    amountForBeginner!: number;
+    declare amountForBeginner?: number;
 
     // Player level fields
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    readyToClaimForPlayer!: boolean;
+    declare readyToClaimForPlayer?: boolean;
 
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    claimedForPlayer!: boolean;
+    declare claimedForPlayer?: boolean;
 
     @Column({
         type: DataType.INTEGER,
         defaultValue: 5000,
     })
-    amountForPlayer!: number;
+    declare amountForPlayer?: number;
 
     // Fan level fields
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    readyToClaimForFan!: boolean;
+    declare readyToClaimForFan?: boolean;
 
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    claimedForFan!: boolean;
+    declare claimedForFan?: boolean;
 
     @Column({
         type: DataType.INTEGER,
         defaultValue: 10000,
     })
-    amountForFan!: number;
+    declare amountForFan?: number;
 
     // Gamer level fields
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    readyToClaimForGamer!: boolean;
+    declare readyToClaimForGamer?: boolean;
 
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    claimedForGamer!: boolean;
+    declare claimedForGamer?: boolean;
 
     @Column({
         type: DataType.INTEGER,
         defaultValue: 50000,
     })
-    amountForGamer!: number;
+    declare amountForGamer?: number;
 
     // Expert level fields
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    readyToClaimForExpert!: boolean;
+    declare readyToClaimForExpert?: boolean;
 
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    claimedForExpert!: boolean;
+    declare claimedForExpert?: boolean;
 
     @Column({
         type: DataType.INTEGER,
         defaultValue: 100000,
     })
-    amountForExpert!: number;
+    declare amountForExpert?: number;
 
     @CreatedAt
     @Column({ type: DataType.DATE })
-    createdAt?: Date;
+    declare createdAt?: Date;
 
     @UpdatedAt
     @Column({ type: DataType.DATE })
-    updatedAt?: Date;
+    declare updatedAt?: Date;
 }

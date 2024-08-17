@@ -10,13 +10,13 @@ export class ReferralTrek extends Model<TReferralTrek> {
         defaultValue : DataType.UUIDV4,
         primaryKey: true
     })
-    id!: string;
+    declare id?: string;
 
     @ForeignKey(() => User)
     @Column({
         type: DataType.UUID
     })
-    userId!: string;
+    declare userId?: string;
     
     @Column({
         type: DataType.BOOLEAN,
@@ -28,110 +28,110 @@ export class ReferralTrek extends Model<TReferralTrek> {
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    claimedFor1Friends!: boolean;
+    declare claimedFor1Friends?: boolean;
 
     @Column({
         type: DataType.INTEGER,
         defaultValue: 10000,
     })
-    amountFor1Friends!: number;
+    declare amountFor1Friends?: number;
 
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    readyToClaimFor5Friends!: boolean;
+    declare readyToClaimFor5Friends?: boolean;
 
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    claimedFor5Friends!: boolean;
+    declare claimedFor5Friends?: boolean;
 
     @Column({
         type: DataType.INTEGER,
         defaultValue: 500000,
     })
-    amountFor5Friends!: number;
+    declare  amountFor5Friends?: number;
 
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    readyToClaimFor10Friends!: boolean;
+    declare readyToClaimFor10Friends?: boolean;
 
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    claimedFor10Friends!: boolean;
+    declare claimedFor10Friends?: boolean;
 
     @Column({
         type: DataType.INTEGER,
         defaultValue: 1000000,
     })
-    amountFor10Friends!: number;
+    declare amountFor10Friends?: number;
 
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    readyToClaimFor20Friends!: boolean;
+    declare readyToClaimFor20Friends?: boolean;
 
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    claimedFor20Friends!: boolean;
+    declare claimedFor20Friends?: boolean;
 
     @Column({
         type: DataType.INTEGER,
         defaultValue: 2000000,
     })
-    amountFor20Friends!: number;
+    declare amountFor20Friends?: number;
 
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    readyToClaimFor50Friends!: boolean;
+    declare readyToClaimFor50Friends?: boolean;
 
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    claimedFor50Friends!: boolean;
+    declare claimedFor50Friends?: boolean;
 
     @Column({
         type: DataType.INTEGER,
         defaultValue: 5000000,
     })
-    amountFor50Friends!: number;
+    declare amountFor50Friends?: number;
 
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    readyToClaimFor100Friends!: boolean;
+    declare readyToClaimFor100Friends?: boolean;
 
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
     })
-    claimedFor100Friends!: boolean;
+    declare claimedFor100Friends?: boolean;
 
     @Column({
         type: DataType.INTEGER,
         defaultValue: 10000000,
     })
-    amountFor100Friends!: number;
+    declare amountFor100Friends?: number;
 
     @CreatedAt
     @Column({ type: DataType.DATE })
-    createdAt?: Date;
+    declare createdAt?: Date;
 
     @UpdatedAt
     @Column({ type: DataType.DATE })
-    updatedAt?: Date;
+    declare updatedAt?: Date;
 }
 

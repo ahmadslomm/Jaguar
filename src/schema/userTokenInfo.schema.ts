@@ -19,7 +19,7 @@ export class UserTokenInfo extends Model<TUserTokenInfo> {
     defaultValue: DataType.UUIDV4,
     primaryKey: true,
   })
-  id!: string;
+  declare id?: string;
 
   @ForeignKey(() => User)
   @Column({ type: DataType.UUID, allowNull: false })

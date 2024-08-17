@@ -7,27 +7,27 @@ export class EnergyTankLevel extends Model<TEnergyTankLevel> {
    
     @PrimaryKey
     @Column({type: DataType.UUID, defaultValue : DataType.UUIDV4,primaryKey: true})
-    id!: string;
+    declare id: string;
 
     @Column({ type: DataType.INTEGER, allowNull: false })
-    level!: number;
+    declare level: number;
 
     @Column({ type: DataType.STRING, allowNull: false })
-    levelName!: string;
+    declare levelName: string;
 
     @Column({ type: DataType.INTEGER, allowNull: false })
-    tankCapacity!: number;
+    declare tankCapacity?: number;
 
     @Column({ type: DataType.INTEGER, allowNull: false })
-    amount!: number;
+    declare amount?: number;
 
     @CreatedAt
     @Column({ type: DataType.DATE })
-    createdAt?: Date;
+    declare createdAt?: Date;
 
     @UpdatedAt
     @Column({ type: DataType.DATE })
-    updatedAt?: Date;
+    declare updatedAt?: Date;
 
     // Optional: Exclude fields from JSON response
     toJSON() {

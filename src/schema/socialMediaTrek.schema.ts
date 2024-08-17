@@ -13,7 +13,7 @@ export class SocialMediaTrek extends Model<TSocialMediaTrek> {
         allowNull: false,
         autoIncrement: true,
     })
-    id!: number;
+    declare id?: number;
 
     @ForeignKey(() => User)
     @Column({
@@ -129,12 +129,12 @@ export class SocialMediaTrek extends Model<TSocialMediaTrek> {
         type: DataType.DATE,
         allowNull: false,
     })
-    createdAt!: Date;
+    declare createdAt?: Date;
 
     @UpdatedAt
     @Column({
         type: DataType.DATE,
         allowNull: false,
     })
-    updatedAt!: Date;
+   declare updatedAt?: Date;
 }

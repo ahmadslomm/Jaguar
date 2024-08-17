@@ -5,27 +5,27 @@ import { Table, Column, Model, DataType, CreatedAt, UpdatedAt, PrimaryKey } from
 export class StatusInfo extends Model<TStatusInfo> {
     @PrimaryKey
     @Column({type: DataType.UUID, defaultValue : DataType.UUIDV4,primaryKey: true})
-    id!: string;
+    declare id?: string;
     
     @Column({ type: DataType.STRING, allowNull: false })
-    status!: string;
+    declare status?: string;
 
     @Column({ type: DataType.INTEGER, allowNull: false })
-    minRequired!: number;
+    declare minRequired?: number;
 
     @Column({ type: DataType.INTEGER, allowNull: false })
-    maxRequired!: number;
+    declare maxRequired?: number;
 
     @Column({ type: DataType.INTEGER, allowNull: true })
-    reward?: number;
+    declare reward?: number;
 
     @CreatedAt
     @Column({ type: DataType.DATE })
-    createdAt?: Date;
+    declare createdAt?: Date;
 
     @UpdatedAt
     @Column({ type: DataType.DATE })
-    updatedAt?: Date;
+    declare updatedAt?: Date;
 }
 
 

@@ -5,41 +5,41 @@ import { User } from './user.schema';
 export class ReferralClaim extends Model {
   @PrimaryKey
   @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
-  id!: string;
+  declare id?: string;
 
-  //Person who is going to refer to other
+  // Person who is going to refer to others
   @ForeignKey(() => User)
   @Column({ type: DataType.UUID, allowNull: false })
-  referrerId!: string;
+  declare referrerId?: string;
 
-  //Person who is referred by someone
+  // Person who is referred by someone
   @ForeignKey(() => User)
   @Column({ type: DataType.UUID, allowNull: false })
-  referredUserId!: string;
+  declare referredUserId?: string;
 
   @Column({ type: DataType.BOOLEAN, defaultValue: false })
-  claimed!: boolean;
+  declare claimed?: boolean;
 
-  @Column({ type : DataType.INTEGER, allowNull: false })
-  referralAmount!: number;
+  @Column({ type: DataType.INTEGER, allowNull: false })
+  declare referralAmount?: number;
 
-  //status referralStatus enum : PENDING | CLAIMED//
-  @Column({ type: DataType.STRING,})
-  referralStatus!: number;
+  // Status referralStatus enum: PENDING | CLAIMED
+  @Column({ type: DataType.STRING })
+  declare referralStatus?: string;
 
   @CreatedAt
   @Column({ type: DataType.DATE })
-  createdAt?: Date;
+  declare createdAt?: Date;
 
   @UpdatedAt
   @Column({ type: DataType.DATE })
-  updatedAt?: Date;
+  declare updatedAt?: Date;
 
   // This creates a relation to the User model, indicating that the referrer is a User
   @BelongsTo(() => User, 'referrerId')
-  referrer!: User;
+  declare referrer?: User;
 
   // This creates a relation to the User model, indicating that the referred user is also a User
   @BelongsTo(() => User, 'referredUserId')
-  referredUser!: User;
-};
+  declare referredUser?: User;
+}

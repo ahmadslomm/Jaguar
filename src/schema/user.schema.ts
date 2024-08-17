@@ -9,7 +9,7 @@ import { UserTokenInfo } from './userTokenInfo.schema';
   
       @PrimaryKey
       @Column({type: DataType.UUID, defaultValue : DataType.UUIDV4,primaryKey: true})
-      id!: string;
+      declare id: string;
   
       @Column(DataType.STRING)
       firstName?: string;
@@ -28,11 +28,11 @@ import { UserTokenInfo } from './userTokenInfo.schema';
   
       @CreatedAt
       @Column({ type: DataType.DATE })
-      createdAt?: Date;
+      declare createdAt?: Date;
   
       @UpdatedAt
       @Column({ field: 'updated_at', type: DataType.DATE })
-      updatedAt?: Date;
+      declare updatedAt?: Date;
 
       @HasMany(() => UserTokenInfo, 'userId')
       userTokenInfos!: UserTokenInfo[];
