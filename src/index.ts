@@ -35,6 +35,9 @@ const token:string | undefined= process.env.TELEGRAM_BOT_TOKEN;
 app.use(cors());
 app.use(express.json());
 app.use('/api/v1',Route);
+app.use('/api/v1/health', (req, res) => {
+    res.status(200).json({ message : 'Hello, world! We are live' });
+})
 
 // Optionally, you can handle errors and database connection
 sequelize.authenticate().then(async() => {
