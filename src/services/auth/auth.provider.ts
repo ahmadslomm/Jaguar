@@ -59,3 +59,25 @@ export const getUserRegistration = async (req: Request) => {
     );
   }
 };
+
+export const generateToken = async(req:Request) => {
+  try {
+    const { telegramId } :any = req.body;
+    let checkAvlUser = await User.findOne({ where : { telegramId}});
+    if(checkAvlUser) {
+      const jsonToken = await createJsonWebToken({userId : checkAvlUser?.id,telegramId })
+
+      return GenResObj(Code.CREATED, true, "Token generated successfully", jsonToken);
+    }
+
+    return GenResObj(Code.NOT_FOUND, false, "Something went wrong")
+  } catch (error) {
+    console.log("Getting error for generating token :", error);
+    return GenResObj(
+      Code.INTERNAL_SERVER,
+      false,
+      "Internal server error",
+      null
+    );
+  }
+}

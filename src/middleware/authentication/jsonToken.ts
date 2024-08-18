@@ -41,7 +41,7 @@ export const authCheck = () => {
                 } else {
                    
                     if(decoded !== null) {
-                        const user = await User.findOne({ where: { telegramId: decoded?.telegramId } });
+                        const user = await User.findOne({ where: { telegramId: decoded?.telegramId }, raw : true });
                     if (!user ) {
                         return res.status(Code.UNAUTHORIZED).json({
                             success: false,

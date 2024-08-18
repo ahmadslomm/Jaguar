@@ -14,40 +14,40 @@ const port = process.env.PORT;
 const app = express();
 const token:string | undefined= process.env.TELEGRAM_BOT_TOKEN;
 
-// if(token) {
-//     const URL = process.env.APP_URL
-//     const bot = new Telegraf(token);
+if(token) {
+    const URL = process.env.APP_URL
+    const bot = new Telegraf(token);
     
-//     bot.start(async(ctx:any) => {
-//         // ctx.reply('Welcome to the Telegram Bot!');
-//        const payload = ctx.update.message.from
-//         const userInfo :any = {
-//             firstName : payload.first_name,
-//             lastName : payload.last_name,
-//             telegramId : payload.id,
-//         }
+    bot.start(async(ctx:any) => {
+        // ctx.reply('Welcome to the Telegram Bot!');
+       const payload = ctx.update.message.from
+        const userInfo :any = {
+            firstName : payload.first_name,
+            lastName : payload.last_name,
+            telegramId : payload.id,
+        }
 
-//         console.log("Getting the telegram data...", ctx.update);
+        console.log("Getting the telegram data...", ctx.update.message.from);
         
-//         let checkuserRegistrationStatus:any = await User.findOne({ where: { telegramId: payload?.id } });
+        let checkuserRegistrationStatus:any = await User.findOne({ where: { telegramId: payload?.id } , raw : true});
         
-//         console.log("first registration", checkuserRegistrationStatus)
-//         if(!checkuserRegistrationStatus) {
-//             // const checkuserRegistrationStatus: boolean = true;
-//             checkuserRegistrationStatus = await createUser(userInfo);
-//         }
+        console.log("Avaialble data from DB ::::", checkuserRegistrationStatus)
+        if(!checkuserRegistrationStatus) {
+            // const checkuserRegistrationStatus: boolean = true;
+            checkuserRegistrationStatus = await createUser(userInfo);
+        }
      
-//         checkuserRegistrationStatus && (ctx.replyWithMarkdownV2(`*Hey ${ctx.update.message.from.first_name} ${ctx.update.message.from.last_name} Welcome to the telegram bot*`,{
-//             reply_markup: {
-//                 inline_keyboard: [
-//                     [{text: 'Click me', web_app: { url : URL}}]
-//                 ]
-//             }
-//         }))
-//     });
+        checkuserRegistrationStatus && (ctx.replyWithMarkdownV2(`*Hey ${ctx.update.message.from.first_name} ${ctx.update.message.from.last_name} Welcome to the telegram bot*`,{
+            reply_markup: {
+                inline_keyboard: [
+                    [{text: 'Click me', web_app: { url : URL}}]
+                ]
+            }
+        }))
+    });
     
-//     bot.launch();
-// }
+    bot.launch();
+}
 
 app.use(cors());
 app.use(express.json());

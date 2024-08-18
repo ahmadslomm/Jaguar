@@ -41,7 +41,7 @@ export const createUser = async (userInfo: TUserModel) => {
   try {
     const { firstName, lastName, telegramId, referralCode } = userInfo;
 
-    console.log("Getting into the create user functions...", userInfo);
+    // console.log("Getting into the create user functions...", userInfo);
 
     //   const levelInfo = {levelName :'LEVEL-1'};
     const levelInfo = await LevelInfo.findOne({

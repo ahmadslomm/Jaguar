@@ -15,6 +15,11 @@ export const AuthController =  {
         const { code, data }: TResponse = await AuthProvider.getUserRegistration(req);
         res.status(code).json(data);
         return;
+    },
+    generateToken : async ( req:Request, res:Response) =>  {
+        const { code, data }: TResponse = await AuthProvider.generateToken(req);
+        res.status(code).json(data);
+        return;
     }
 
 }
