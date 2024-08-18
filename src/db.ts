@@ -26,7 +26,7 @@ export const sequelize = new Sequelize({
     dialect: 'mysql',
     username: 'root' || process.env.VPS_MYSQL_USER,
     password: 'Flipcoin301299@301299' || process.env.VPS_MYSQL_PASSWORD,
-    host: '82.112.236.87',
+    host: 'localhost',
     models: [User,LeagueTrek ,ReferralTrek,SocialMediaTrek, ReferralClaim, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
     logging: false, // Disable logging; set to console.log to see SQL queries
 });
