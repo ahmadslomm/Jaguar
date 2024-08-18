@@ -23,7 +23,7 @@ if (!process.env.MYSQL_USER || !process.env.MYSQL_HOST || !process.env.MYSQL_PAS
 //********** PRODUCTION DB CONNECTION ********** //
 export const sequelize = new Sequelize({
     database: 'flipcoin_backend' || process.env.VPS_MYSQL_DATABASE,
-    dialect: 'sqlite',
+    dialect: 'mysql',
     username: 'root' || process.env.VPS_MYSQL_USER,
     password: 'Flipcoin301299@301299' || process.env.VPS_MYSQL_PASSWORD,
     host: 'localhost',
