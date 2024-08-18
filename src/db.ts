@@ -25,7 +25,7 @@ export const sequelize = new Sequelize({
     database: 'flipcoin_backend' || process.env.VPS_MYSQL_DATABASE,
     dialect: 'mysql',
     username: 'root' || process.env.VPS_MYSQL_USER,
-    password: 'Flipcoin301299@' || process.env.VPS_MYSQL_PASSWORD,
+    password: 'Flipcoin301299@301299' || process.env.VPS_MYSQL_PASSWORD,
     host: 'localhost',
     models: [User,LeagueTrek ,ReferralTrek,SocialMediaTrek, ReferralClaim, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
     logging: false, // Disable logging; set to console.log to see SQL queries
