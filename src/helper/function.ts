@@ -41,6 +41,8 @@ export const createUser = async (userInfo: TUserModel) => {
   try {
     const { firstName, lastName, telegramId, referralCode } = userInfo;
 
+    console.log("Getting into the create user functions...", userInfo);
+
     //   const levelInfo = {levelName :'LEVEL-1'};
     const levelInfo = await LevelInfo.findOne({
       where: { levelName: "LEVEL-1" },
@@ -81,6 +83,8 @@ export const createUser = async (userInfo: TUserModel) => {
       referralCode: referralCodeToStore,
       referredBy: referredByUser ? referredByUser.id : null,
     });
+
+    console.log("Created new user: ", createUser)
 
     if (referredByUser) {
       await ReferralClaim.create({

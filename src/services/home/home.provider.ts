@@ -13,6 +13,7 @@ import { literal } from "sequelize";
 export const getUserTokenInfo = async(req: AuthRequest) => {
     try {
         const { telegramId } = req;
+        
         console.log("Getting the telegrame ID of : ", telegramId)
         const user :any= await User.findOne({where :{ telegramId }});
 

@@ -4,6 +4,8 @@ import cors from 'cors';
 import Route from './route';
 import { Telegraf } from 'telegraf';
 import { DbInstance,sequelize } from './db';
+import { User } from './schema/user.schema';
+import { createUser } from './helper/function';
 // import { registerUser } from './helper/function';
 
 
@@ -18,7 +20,22 @@ const token:string | undefined= process.env.TELEGRAM_BOT_TOKEN;
     
 //     bot.start(async(ctx:any) => {
 //         // ctx.reply('Welcome to the Telegram Bot!');
-//         const checkuserRegistrationStatus: boolean = await registerUser(ctx.update.message.from);
+//        const payload = ctx.update.message.from
+//         const userInfo :any = {
+//             firstName : payload.first_name,
+//             lastName : payload.last_name,
+//             telegramId : payload.id,
+//         }
+
+//         console.log("Getting the telegram data...", ctx.update);
+        
+//         let checkuserRegistrationStatus:any = await User.findOne({ where: { telegramId: payload?.id } });
+        
+//         console.log("first registration", checkuserRegistrationStatus)
+//         if(!checkuserRegistrationStatus) {
+//             // const checkuserRegistrationStatus: boolean = true;
+//             checkuserRegistrationStatus = await createUser(userInfo);
+//         }
      
 //         checkuserRegistrationStatus && (ctx.replyWithMarkdownV2(`*Hey ${ctx.update.message.from.first_name} ${ctx.update.message.from.last_name} Welcome to the telegram bot*`,{
 //             reply_markup: {

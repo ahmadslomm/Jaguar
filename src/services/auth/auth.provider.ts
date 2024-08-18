@@ -10,7 +10,11 @@ export const register = async (req: Request) => {
   try {
     const payload = req.body;
 
+    console.log("Getting the payload...", payload);
+
     let checkAvlUser = await User.findOne({ where: { telegramId: +payload?.telegramId } });
+
+    console.log("Checking the user...", checkAvlUser);
 
     if (!checkAvlUser) {
         await createUser(payload)
