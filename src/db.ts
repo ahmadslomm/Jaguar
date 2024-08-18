@@ -22,10 +22,10 @@ if (!process.env.MYSQL_USER || !process.env.MYSQL_HOST || !process.env.MYSQL_PAS
 
 //********** PRODUCTION DB CONNECTION ********** //
 export const sequelize = new Sequelize({
-    database: process.env.VPS_MYSQL_DATABASE,
+    database: 'flipcoin_backend' || process.env.VPS_MYSQL_DATABASE,
     dialect: 'mysql',
-    username: process.env.VPS_MYSQL_USER,
-    password: process.env.VPS_MYSQL_PASSWORD,
+    username: 'root' || process.env.VPS_MYSQL_USER,
+    password: 'Flipcoin301299@' || process.env.VPS_MYSQL_PASSWORD,
     host: 'localhost',
     models: [User,LeagueTrek ,ReferralTrek,SocialMediaTrek, ReferralClaim, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
     logging: false, // Disable logging; set to console.log to see SQL queries
