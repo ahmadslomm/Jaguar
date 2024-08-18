@@ -21,16 +21,31 @@ if (!process.env.MYSQL_USER || !process.env.MYSQL_HOST || !process.env.MYSQL_PAS
 };
 
 //********** PRODUCTION DB CONNECTION ********** //
-
 export const sequelize = new Sequelize({
-    database: process.env.MYSQL_DATABASE,
-    dialect: 'sqlite',
-    username: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    host: 'dpg-cqt3vgij1k6c73d96nr0-a',
+    database: process.env.VPS_MYSQL_DATABASE,
+    dialect: 'mysql',
+    username: process.env.VPS_MYSQL_USER,
+    password: process.env.VPS_MYSQL_PASSWORD,
+    host: 'localhost',
     models: [User,LeagueTrek ,ReferralTrek,SocialMediaTrek, ReferralClaim, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
     logging: false, // Disable logging; set to console.log to see SQL queries
 });
+// export const sequelize = new Sequelize(process.env.VPS_MYSQL_DATABASE!, process.env.VPS_MYSQL_USER!, process.env.VPS_MYSQL_PASSWORD, {
+//     host: '82.112.236.87',
+//     dialect: 'mysql',
+//     models: [User, StatusInfo, MultiTapLevel, EnergyTankLevel, EnergyChargingLevel, UserTokenInfo, ReferralClaim, SocialMediaTrek, ReferralTrek, LeagueTrek]
+// });
+
+//********** STAGIN DB CONNECTION ********** //
+// export const sequelize = new Sequelize({
+//     database: process.env.MYSQL_DATABASE,
+//     dialect: 'sqlite',
+//     username: process.env.MYSQL_USER,
+//     password: process.env.MYSQL_PASSWORD,
+//     host: 'dpg-cqt3vgij1k6c73d96nr0-a',
+//     models: [User,LeagueTrek ,ReferralTrek,SocialMediaTrek, ReferralClaim, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
+//     logging: false, // Disable logging; set to console.log to see SQL queries
+// });
 
 //********** LOCAL DB CONNECTION ********** //
 // export const sequelize = new Sequelize({
