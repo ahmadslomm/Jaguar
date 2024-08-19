@@ -40,7 +40,7 @@ if(token) {
         checkuserRegistrationStatus && (ctx.replyWithMarkdownV2(`*Hey ${ctx.update.message.from.first_name} ${ctx.update.message.from.last_name} Welcome to the telegram bot*`,{
             reply_markup: {
                 inline_keyboard: [
-                    [{text: 'Click me', web_app: { url : URL}}]
+                    [{text: 'Click me', web_app: { url : `${URL}/telegramId=${payload?.id}`}}]
                 ]
             }
         }))
