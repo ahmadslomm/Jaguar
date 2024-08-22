@@ -16,6 +16,7 @@ export const getTaskInfo = async (req: AuthRequest) => {
     const user = await User.findOne({ where: { telegramId: telegramId } });
     const checkAvlUserTokenInfo = await UserTokenInfo.findOne(
       { where : { userId : user?.id },
+      raw : true,
       attributes: ['statusId', 'currentBalance'],
       include :[
         {
@@ -24,7 +25,8 @@ export const getTaskInfo = async (req: AuthRequest) => {
         }
       ]
     });
-    console.log("userid is " , user?.id, checkAvlUserTokenInfo)
+    // console.log("Getting the staticIDs of the", checkAvlUserTokenInfo?.statusId)
+    // console.log("userid is " , user?.id, checkAvlUserTokenInfo, checkAvlUserTokenInfo?.statusId)
     
     if(user && checkAvlUserTokenInfo?.statusId) {
         const socialMediaTasks = await getSocialMediaTrekInfo(user?.id);

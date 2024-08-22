@@ -403,7 +403,7 @@ export async function getReferralTrekInfo(userId: string | undefined) {
 
 
 
-  console.log("Geting for refere :::",response) 
+  // console.log("Geting response for referralTrekInfo:",response) 
 
   return response;
 }
@@ -524,6 +524,8 @@ export async function getLeagueTrekInfo(userId: string, statusId: string) {
     }).filter(Boolean)
     .slice(0,5)
   };
+
+  // console.log("Getting response in getLeagueInfo", response)
 
   return response;
 }

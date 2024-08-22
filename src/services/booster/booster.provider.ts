@@ -11,6 +11,7 @@ import { Types } from "mongoose";
 import { literal, Op } from "sequelize";
 import sequelize from "sequelize/types/sequelize";
 import { updateTankCapacity } from "../../helper/function";
+import { raw } from "mysql";
 
 export const getBoosterInfo = async (req: AuthRequest) => {
   try {
@@ -20,6 +21,7 @@ export const getBoosterInfo = async (req: AuthRequest) => {
 
     const checkAvlUserTokenInfo: any = await UserTokenInfo.findOne({
       where: { userId: checkAvlUser.id },
+      raw: true
     });
 
     // *************** Get next avaialable level for different booster *************** //
@@ -119,6 +121,7 @@ export const updatelevel = async (req: AuthRequest) => {
 
     const checkAvlUserTokenInfo: any = await UserTokenInfo.findOne({
       where: { userId: checkAvlUser?.id },
+      raw : true
     });
 
     const collectionType: any =
@@ -144,7 +147,10 @@ export const updatelevel = async (req: AuthRequest) => {
     const checkAvlNextLevelInfo: any = await collectionType.findOne(
       { where : {
         levelName: updatedNextLevelName,
-      }}
+      },
+      raw : true
+    },
+
     );
 
     if (checkAvlNextLevelInfo.amount <= checkAvlUserTokenInfo.currentBalance) {
