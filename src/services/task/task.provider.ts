@@ -14,17 +14,17 @@ export const getTaskInfo = async (req: AuthRequest) => {
     console.log("object is " , telegramId);
 
     const user = await User.findOne({ where: { telegramId: telegramId } });
-    console.log("userid is " , user?.id)
     const checkAvlUserTokenInfo = await UserTokenInfo.findOne(
-        { where : { userId : user?.id },
-        attributes: ['statusId', 'currentBalance'],
-        include :[
-            {
-                model : StatusInfo,
-                attributes : ['status']
-            }
-        ]
+      { where : { userId : user?.id },
+      attributes: ['statusId', 'currentBalance'],
+      include :[
+        {
+          model : StatusInfo,
+          attributes : ['status']
+        }
+      ]
     });
+    console.log("userid is " , user?.id, checkAvlUserTokenInfo)
     
     if(user && checkAvlUserTokenInfo?.statusId) {
         const socialMediaTasks = await getSocialMediaTrekInfo(user?.id);

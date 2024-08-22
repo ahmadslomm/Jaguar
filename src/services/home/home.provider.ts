@@ -13,7 +13,7 @@ import { literal } from "sequelize";
 export const getUserTokenInfo = async(req: AuthRequest) => {
     try {
         const { telegramId } = req;
-        
+
         console.log("Getting the telegrame ID of : ", telegramId)
         const user :any= await User.findOne({where :{ telegramId }});
 
@@ -33,7 +33,7 @@ export const getUserTokenInfo = async(req: AuthRequest) => {
             }
         );
 
-        // console.log("Getting the user token info : ", userTokenInfo)
+        console.log("Getting the user token info : ", userTokenInfo)
         return GenResObj(Code.OK, true, "User token info fetched successfully.", userTokenInfo)
 
     } catch (error) {
