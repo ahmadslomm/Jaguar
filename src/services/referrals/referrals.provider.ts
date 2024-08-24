@@ -15,15 +15,18 @@ export const getReferralInfo = async (req: AuthRequest) => {
   try {
     const { telegramId } = req;
 
-    const user = await User.findOne({ where: { telegramId: telegramId } });
+    const user = await User.findOne({ where: { telegramId: telegramId }, raw: true });
     console.log("USer", user);
     const referralCode = user?.referralCode;
 
-    const invitationLink = `${process.env.REFERRAL_URL}?referralCode=${referralCode}`;
+    const invitationLink = `${process.env.REFERRAL_URL}?start=${referralCode}`;
 
-    const referralClaims = await ReferralClaim.findAll({
+    const datas = await ReferralClaim.findAll({ where : { referrerId: user?.id } });
+
+    console.log("Getingv datas", datas)
+
+    const referralClaims:any = await ReferralClaim.findAll({
       where: { referrerId: user?.id },
-      attributes: ["id", "referralAmount", "claimed"],
       include: [
         {
           model: User,
@@ -32,7 +35,7 @@ export const getReferralInfo = async (req: AuthRequest) => {
           include: [
             {
               model: UserTokenInfo,
-              attributes: ["statusId"],
+              attributes: [],
               include: [
                 {
                   model: StatusInfo,
@@ -43,16 +46,27 @@ export const getReferralInfo = async (req: AuthRequest) => {
           ],
         },
        ],
+       attributes: [
+        "id", 
+        "referralAmount", 
+        "claimed"
+      ],
+      raw : true,
+      nest : true
     });
 
     let totalCoin = 0;
 
+    console.log("referralClaims *********************", referralClaims)
+
     const formattedReferralClaims = referralClaims.map((referralClaim: any) => {
-      // console.dir(referralClaim.referredUser.userTokenInfos[0], { depth : null} )
+      // console.dir(referralClaim.referredUser.userTokenInfos[0], { depth : null} );
+      // console.log("Getting the referred user name", referralClaim.referredUser)
+      // console.log("Getting the status name", referralClaim?.referredUser.userTokenInfos?.statusInfo.status)
       const { firstName, lastName } = referralClaim.referredUser;
       const status =
-        referralClaim.referredUser.userTokenInfos.length > 0
-          ? referralClaim.referredUser.userTokenInfos[0].statusInfo.status
+        referralClaim?.referredUser?.userTokenInfos?.statusInfo.status 
+          ? referralClaim?.referredUser.userTokenInfos?.statusInfo.status
           : null;
 
           totalCoin = totalCoin + referralClaim.referralAmount

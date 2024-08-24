@@ -19,13 +19,24 @@ if(token) {
     const bot = new Telegraf(token);
     
     bot.start(async(ctx:any) => {
+        console.log("Geting the CTX response********************************", ctx.update.message.text)
         // ctx.reply('Welcome to the Telegram Bot!');
+        const message = ctx.update.message.text;
+        let checkAvlReferredId: Boolean = false;
+        let referralCode:string = ''
+        if(message.startsWith('/start')) {
+            const [ start, referralCodeOfReferredUser] = message.split(' ');
+            referralCode = referralCodeOfReferredUser;
+            checkAvlReferredId = true;
+        };
+
        const payload = ctx.update.message.from
         const userInfo :any = {
             firstName : payload.first_name,
             lastName : payload.last_name,
             telegramId : payload.id,
-        }
+            ...(checkAvlReferredId && { referralCode : referralCode })
+        };
 
         console.log("Getting the telegram data...", ctx.update.message.from);
         
@@ -62,7 +73,7 @@ app.use('/api/v1/health', (req, res) => {
 
 // Optionally, you can handle errors and database connection
 sequelize.authenticate().then(async() => {
-    await sequelize.sync();
+    await sequelize.sync({ alter : true});
     console.log("Database connected successfully");
     app.listen(port, () => {
         try {

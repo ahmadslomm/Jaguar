@@ -153,6 +153,8 @@ export const updatelevel = async (req: AuthRequest) => {
 
     );
 
+    console.log("getting the nnectlevel INfo , ", checkAvlNextLevelInfo)
+
     if (checkAvlNextLevelInfo.amount <= checkAvlUserTokenInfo.currentBalance) {
       const udpatedCurrenetBalance =
         checkAvlUserTokenInfo.currentBalance - checkAvlNextLevelInfo.amount;
@@ -161,6 +163,7 @@ export const updatelevel = async (req: AuthRequest) => {
         {
           [boosterType]: updatedNextLevelName,
           currentBalance: udpatedCurrenetBalance,
+          ...(boosterType === 'energyTankLevel' && { totalTankCapacity : checkAvlNextLevelInfo?.tankCapacity})
         },
         {
           where: {

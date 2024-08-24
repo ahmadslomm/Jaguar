@@ -292,7 +292,10 @@ export const updateTankCapacity = async (userId: string | undefined) => {
 export async function getSocialMediaTrekInfo(userId: string | undefined) {
   const checkAvlSocialMediaTrek = await SocialMediaTrek.findOne({
     where: { userId },
+    raw: true
   });
+
+  // console.log("Get socialMediaTrekInfo*****************************", checkAvlSocialMediaTrek);
 
   const socialMediaTasks = [
     {
@@ -356,6 +359,7 @@ export async function getSocialMediaTrekInfo(userId: string | undefined) {
 export async function getReferralTrekInfo(userId: string | undefined) {
   const checkAvlReferralTrek = await ReferralTrek.findOne({
     where: { userId },
+    raw : true
   });
 
   const response = {
@@ -398,7 +402,7 @@ export async function getReferralTrekInfo(userId: string | undefined) {
       }),
     ]
     .filter(Boolean)
-    .slice(0, 5)
+    // .slice(0, 5)
   };
 
 
@@ -409,16 +413,20 @@ export async function getReferralTrekInfo(userId: string | undefined) {
 }
 
 //******************* Get League Trek Info ******************* //
-export async function getLeagueTrekInfo(userId: string, statusId: string) {
+export async function getLeagueTrekInfo(userId: string, statusId: string, turnOverBalance : number | string) {
   // Fetch the league trek info for the given user
   const checkAvlLeagueTrek: any = await LeagueTrek.findOne({
     where: { userId },
+    raw : true
   });
 
   const checkAvlStatusInfo = await StatusInfo.findOne({
     where: { id: statusId },
     attributes: ["status"],
+    raw : true
   });
+
+  console.log("Getting the leagugeInfoooooooooooooooo", checkAvlStatusInfo)
 
   if (!checkAvlLeagueTrek) {
     // Handle case where no data is found
@@ -467,38 +475,87 @@ export async function getLeagueTrekInfo(userId: string, statusId: string) {
       minRequired: 500000,
       maxRequired: 1000000
     },
+    {
+      type: "Master",
+      amountField: "amountForMaster",
+      readyToClaimField: "readyToClaimForMaster",
+      claimedField: "claimedForMaster",
+      minRequired: 1000000,
+      maxRequired: 10000000
+    },
+    {
+      type: "Pro",
+      amountField: "amountForPro",
+      readyToClaimField: "readyToClaimForPro",
+      claimedField: "claimedForPro",
+      minRequired: 10000000,
+      maxRequired: 50000000
+    },
+    {
+      type: "Veteran",
+      amountField: "amountForVeteran",
+      readyToClaimField: "readyToClaimForVeteran",
+      claimedField: "claimedForVeteran",
+      minRequired: 50000000,
+      maxRequired: 100000000
+    },
+    {
+      type: "Champion",
+      amountField: "amountForChampion",
+      readyToClaimField: "readyToClaimForChampion",
+      claimedField: "claimedForChampion",
+      minRequired: 100000000,
+      maxRequired: 500000000
+    },
+    {
+      type: "Degen",
+      amountField: "amountForDegen",
+      readyToClaimField: "readyToClaimForDegen",
+      claimedField: "claimedForDegen",
+      minRequired: 500000000,
+      maxRequired: +Infinity
+    },
   ];
 
   let currentFlagSet = false;
 
   const response = {
     League: levels.map((level: any) => {
-      const isCurrentLevel = level.type === checkAvlStatusInfo?.status;
-      const currentFlag = currentFlagSet ? true : false;
-
+      var isCurrentLevel = level.type === checkAvlStatusInfo?.status;
+      var currentFlag = currentFlagSet ? true : false;
+      // const manageClaimFalgForNextLevel = false
+      console.log("getting current eteration;", level.type, checkAvlStatusInfo?.status)
       // If the current level is found and currentFlag hasn't been set yet
       if(!checkAvlLeagueTrek[level.claimedField]) {
+        const claim = turnOverBalance >= level.maxRequired ? true : checkAvlLeagueTrek[level.readyToClaimField];
+        console.log("Claim:", claim,'status',isCurrentLevel, currentFlag, checkAvlStatusInfo?.status,currentFlag,  'type:', level.type, turnOverBalance, level.maxRequired)
         if (isCurrentLevel && !currentFlagSet) {
+          console.log("Level name 111:", level.type)
           currentFlagSet = true; // Set the flag to true for the next record
+          // isCurrentLevel = false;
           return {
             type: level.type,
             level: level.type,
             coin: checkAvlLeagueTrek[level.amountField],
-            claim: checkAvlLeagueTrek[level.readyToClaimField],
+            // claim: checkAvlLeagueTrek[level.readyToClaimField],
+            claim,
             claimed: checkAvlLeagueTrek[level.claimedField],
             currentLevel: false,
             // currentFlag: false, // No flag for the current level
             minRequired: level.minRequired,
             maxRequired: level.maxRequired,
           };
-        }
+        };
+
         if (!isCurrentLevel && currentFlagSet) {
+          console.log("Level name 222:", level.type)
           currentFlagSet = false; // Set the flag to true for the next record
           return {
             type: level.type,
             level: level.type,
             coin: checkAvlLeagueTrek[level.amountField],
-            claim: checkAvlLeagueTrek[level.readyToClaimField],
+            // claim: checkAvlLeagueTrek[level.readyToClaimField],
+            claim,
             claimed: checkAvlLeagueTrek[level.claimedField],
             currentLevel: true,
             // currentFlag: false, // No flag for the current level
@@ -508,11 +565,13 @@ export async function getLeagueTrekInfo(userId: string, statusId: string) {
         }
   
         // For all other records
+        console.log("Level name 333:", level.type)
         return {
           type: level.type,
           level: level.type,
           coin: checkAvlLeagueTrek[level.amountField],
-          claim: checkAvlLeagueTrek[level.readyToClaimField],
+          // claim: checkAvlLeagueTrek[level.readyToClaimField],
+          claim,
           claimed: checkAvlLeagueTrek[level.claimedField],
           currentLevel: false,
           // currentFlag, // The next record after currentLevel will have currentFlag true
@@ -520,9 +579,13 @@ export async function getLeagueTrekInfo(userId: string, statusId: string) {
           maxRequired: level.maxRequired,
         };
       }
+      else if(checkAvlLeagueTrek[level.claimedField] && isCurrentLevel ) {
+        currentFlagSet = true
+      };
+
       return null
     }).filter(Boolean)
-    .slice(0,5)
+    // .slice(0,5)
   };
 
   // console.log("Getting response in getLeagueInfo", response)
@@ -532,8 +595,8 @@ export async function getLeagueTrekInfo(userId: string, statusId: string) {
 
 //******************* Update Social Media Trek Info ******************* //
 export async function updateSocialTrek(data: any) {
-  const { userId, type, action } = data;
-
+  const { userId, type, action, telegramId } = data;
+  console.log("dataaaaa", data)
   const socialTrekList = [
     {
       type: "FollowonTwitter",
@@ -645,13 +708,21 @@ export async function updateSocialTrek(data: any) {
   );
 
   if (action == "claim") {
-    await UserTokenInfo.update(
-      {
-        currentBalance: literal(`currentBalance + ${amount}`),
-        turnOverBalance: literal(`turnOverBalance + ${amount}`),
-      },
-      { where: { userId } }
-    );
+    const currentTime = new Date();
+    const userTokenInfo = await UserTokenInfo.findOne({where :{ userId : userId}});
+    userTokenInfo && await userTokenInfo.increment('currentBalance', { by: amount });
+    userTokenInfo && await userTokenInfo.increment('turnOverBalance', { by: amount });
+    userTokenInfo && await userTokenInfo.update({ tankUpdateTime: currentTime });
+    userTokenInfo &&  await userTokenInfo.reload();
+    await updateLeagueLevel(telegramId);
+    // const temp = await UserTokenInfo.update(
+    //   {
+    //     currentBalance: literal(`currentBalance + ${amount}`),
+    //     turnOverBalance: literal(`turnOverBalance + ${amount}`),
+    //   },
+    //   { where: { userId } }
+    // );
+    // console.log("Getting temp*********", temp);
   }
 
   return updatedSocialMediaTrek;
@@ -659,7 +730,7 @@ export async function updateSocialTrek(data: any) {
 
 //******************* Update Referral Trek Info ******************* //
 export async function updateReferTrek(data: any) {
-  const { userId, type, action } = data;
+  const { userId, type, action, telegramId } = data;
   const referTrekList = [
     {
       type: 1,
@@ -717,20 +788,28 @@ export async function updateReferTrek(data: any) {
     { where: { userId } }
   );
 
-  await UserTokenInfo.update(
-    {
-      currentBalance: literal(`currentBalance + ${amount}`),
-      turnOverBalance: literal(`turnOverBalance + ${amount}`),
-    },
-    { where: { userId } }
-  );
+  const currentTime = new Date();
+  const userTokenInfo = await UserTokenInfo.findOne({where :{ userId : userId}});
+  userTokenInfo && await userTokenInfo.increment('currentBalance', { by: amount });
+  userTokenInfo && await userTokenInfo.increment('turnOverBalance', { by: amount });
+  userTokenInfo && await userTokenInfo.update({ tankUpdateTime: currentTime });
+  userTokenInfo &&  await userTokenInfo.reload();
+  await updateLeagueLevel(telegramId);
+
+  // await UserTokenInfo.update(
+  //   {
+  //     currentBalance: literal(`currentBalance + ${amount}`),
+  //     turnOverBalance: literal(`turnOverBalance + ${amount}`),
+  //   },
+  //   { where: { userId } }
+  // );
 
   return updatedReferralTrek;
 }
 
 //******************* Update League Trek Info ******************* //
 export async function updateLeagueTrek(data: any) {
-  const { userId, type, action } = data;
+  const { userId, type, action, telegramId } = data;
 
   const leagueTrekList = [
     {
@@ -745,7 +824,12 @@ export async function updateLeagueTrek(data: any) {
       fieldName: "claimedForPlayer",
       amount: 5000,
     },
-    { type: "Fan", action: "claim", fieldName: "claimedForFan", amount: 10000 },
+    { 
+      type: "Fan", 
+      action: "claim", 
+      fieldName: "claimedForFan", 
+      amount: 10000 
+    },
     {
       type: "Gamer",
       action: "claim",
@@ -757,6 +841,36 @@ export async function updateLeagueTrek(data: any) {
       action: "claim",
       fieldName: "claimedForExpert",
       amount: 100000,
+    },
+    {
+      type: "Master",
+      action: "claim",
+      fieldName: "claimedForMaster",
+      amount: 500000,
+    },
+    {
+      type: "Pro",
+      action: "claim",
+      fieldName: "claimedForPro",
+      amount: 1000000,
+    },
+    {
+      type: "Veteran",
+      action: "claim",
+      fieldName: "claimedForVeteran",
+      amount: 5000000,
+    },
+    {
+      type: "Champion",
+      action: "claim",
+      fieldName: "claimedForChampion",
+      amount: 10000000,
+    },
+    {
+      type: "Degen",
+      action: "claim",
+      fieldName: "claimedForDegen",
+      amount: 50000000,
     },
   ];
 
@@ -776,13 +890,21 @@ export async function updateLeagueTrek(data: any) {
     { where: { userId } }
   );
 
-  await UserTokenInfo.update(
-    {
-      currentBalance: literal(`currentBalance + ${amount}`),
-      turnOverBalance: literal(`turnOverBalance + ${amount}`),
-    },
-    { where: { userId } }
-  );
+  const currentTime = new Date();
+  const userTokenInfo = await UserTokenInfo.findOne({where :{ userId : userId}});
+  userTokenInfo && await userTokenInfo.increment('currentBalance', { by: amount });
+  userTokenInfo && await userTokenInfo.increment('turnOverBalance', { by: amount });
+  userTokenInfo && await userTokenInfo.update({ tankUpdateTime: currentTime });
+  userTokenInfo &&  await userTokenInfo.reload();
+  await updateLeagueLevel(telegramId);
+
+  // await UserTokenInfo.update(
+  //   {
+  //     currentBalance: literal(`currentBalance + ${amount}`),
+  //     turnOverBalance: literal(`turnOverBalance + ${amount}`),
+  //   },
+  //   { where: { userId } }
+  // );
 
   return updatedLeagueTrek;
 }
@@ -800,7 +922,9 @@ async function updateRefferelCount(userId: string, totalReferral: number) {
 
   const referralTrek = await ReferralTrek.findOne({
     where: { userId: userId },
+    raw : true
   });
+  console.log("getting referral trek information ::::;", referralTrek)
 
   if (!referralTrek) {
     throw new Error(`ReferralTrek record not found for userId: ${userId}`);
@@ -814,7 +938,9 @@ async function updateRefferelCount(userId: string, totalReferral: number) {
   }
 
   // Save the updated record
-  await referralTrek.save();
+  await ReferralTrek.update(referralTrek, {
+    where: { id: referralTrek.id }
+  });
 }
 
 //******************* Check league/ status level and update it ******************* //
@@ -828,12 +954,13 @@ export async function updateLeagueLevel(telegramId: string | undefined) {
   }
   const checkAvlUserTokenInfo = await UserTokenInfo.findOne({
     where: { userId: checkAvlUser?.id },
+    raw : true,
     attributes: ["currentBalance", "statusId", "turnOverBalance"],
   });
 
   console.log("Balance info: ", checkAvlUserTokenInfo);
 
-  const checkAvlRequiredStatsInfo = await StatusInfo.findOne({
+  var checkAvlRequiredStatsInfo = await StatusInfo.findOne({
     where: {
       minRequired: {
         [Op.lte]: checkAvlUserTokenInfo?.turnOverBalance,
@@ -846,6 +973,14 @@ export async function updateLeagueLevel(telegramId: string | undefined) {
 
   console.log("heck ccccc", checkAvlRequiredStatsInfo);
 
+  if(checkAvlUserTokenInfo && checkAvlUserTokenInfo?.turnOverBalance > 500000000) {
+    checkAvlRequiredStatsInfo = await StatusInfo.findOne({
+      where : {
+        status : 'Degen'
+      }
+    })
+  };
+
   const updateStatus = await UserTokenInfo.update(
     { statusId: checkAvlRequiredStatsInfo?.id },
     { where: { userId: checkAvlUser.id } }
@@ -857,17 +992,25 @@ export async function updateLeagueLevel(telegramId: string | undefined) {
     { type: "Fan", fieldName: "readyToClaimForFan", amount: 10000 },
     { type: "Gamer", fieldName: "readyToClaimForGamer", amount: 50000 },
     { type: "Expert", fieldName: "readyToClaimForExpert", amount: 100000 },
+    { type: "Master", fieldName: "readyToClaimForMaster", amount: 500000 },
+    { type: "Pro", fieldName: "readyToClaimForPro", amount: 1000000 },
+    { type: "Veteran", fieldName: "readyToClaimForVeteran", amount: 5000000 },
+    { type: "Champion", fieldName: "readyToClaimForChampion", amount: 10000000 },
+    { type: "Degen", fieldName: "readyToClaimForDegen", amount: 50000000 },
   ];
 
   const field = leagueTrekList.filter(
     (item) => item.type === checkAvlRequiredStatsInfo?.status
   )[0];
 
-  if (!field) {
-    return null;
-  }
 
-  const fieldName = field.fieldName;
+  var fieldName = field?.fieldName;
+
+  if(checkAvlUserTokenInfo && checkAvlUserTokenInfo?.turnOverBalance > 500000000) {
+    fieldName = 'readyToClaimForDegen'
+  };
+
+  console.log("getting in this field", fieldName);
 
   const updatedLeagueTrek = await LeagueTrek.update(
     { [fieldName]: true },

@@ -22,7 +22,7 @@ export const getLederBoardInfo = async (req: AuthRequest) => {
           attributes: [],
         },
       ],
-      attributes: [[col('statusInfo.status'),'status'], "currentBalance"],
+      attributes: [[col('statusInfo.status'),'status'], "currentBalance","turnOverBalance"],
       raw: true,
     });
 
@@ -44,33 +44,33 @@ export const getLederBoardInfo = async (req: AuthRequest) => {
       attributes: [
         "id",
         "userId",
-        "currentBalance",
+        "turnOverBalance",
         [col("userInfo.id"), "userInfoId"],
         [col("userInfo.firstName"), "firstName"],
         [col("userInfo.lastName"), "lastName"],
         "statusInfo.status",
       ],
-      order: [["currentBalance", "DESC"]],
-      limit: 8,
+      order: [["turnOverBalance", "DESC"]],
+      // limit: 8,
       raw: true,
       subQuery: false,
     });
 
-    console.log("Getting into the topUserTokenInfios...", topUserTokenInfos);
+    // console.log("Getting into the topUserTokenInfios...", topUserTokenInfos);
 
     const teamData = topUserTokenInfos
-      .filter((info:any) => info.userId !== user?.id)
+      // .filter((info:any) => info.userId !== user?.id)
       .map((info: any) => ({
         name: `${info?.firstName}${info?.lastName}`,
         level: info?.status || "Unknown",
-        coins: info.currentBalance,
+        coins: info.turnOverBalance,
       }));
 
     const formattedResponse = {
       personalData: {
         name: `${user?.firstName}${user?.lastName}`,
         level: checkAvlUserTokenInfo?.status,
-        coins: checkAvlUserTokenInfo?.currentBalance,
+        coins: checkAvlUserTokenInfo?.turnOverBalance,
       },
       teamData,
     };

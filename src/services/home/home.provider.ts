@@ -33,7 +33,7 @@ export const getUserTokenInfo = async(req: AuthRequest) => {
             }
         );
 
-        console.log("Getting the user token info : ", userTokenInfo)
+        // console.log("Getting the user token info : ", userTokenInfo)
         return GenResObj(Code.OK, true, "User token info fetched successfully.", userTokenInfo)
 
     } catch (error) {

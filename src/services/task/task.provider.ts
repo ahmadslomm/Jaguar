@@ -17,7 +17,7 @@ export const getTaskInfo = async (req: AuthRequest) => {
     const checkAvlUserTokenInfo = await UserTokenInfo.findOne(
       { where : { userId : user?.id },
       raw : true,
-      attributes: ['statusId', 'currentBalance'],
+      attributes: ['statusId', 'currentBalance', 'turnOverBalance'],
       include :[
         {
           model : StatusInfo,
@@ -31,10 +31,11 @@ export const getTaskInfo = async (req: AuthRequest) => {
     if(user && checkAvlUserTokenInfo?.statusId) {
         const socialMediaTasks = await getSocialMediaTrekInfo(user?.id);
         const referrealTrek = await getReferralTrekInfo(user?.id);
-        const leagueTrek = await getLeagueTrekInfo(user?.id, checkAvlUserTokenInfo?.statusId);
+        const leagueTrek = await getLeagueTrekInfo(user?.id, checkAvlUserTokenInfo?.statusId, checkAvlUserTokenInfo?.turnOverBalance);
 
         const responseObj = {
           totalCoins : checkAvlUserTokenInfo?.currentBalance,
+          totalTurnOverBalance : checkAvlUserTokenInfo?.turnOverBalance,
           social : socialMediaTasks,
           refer : referrealTrek,
           league : leagueTrek
@@ -64,13 +65,13 @@ export const updateTaskStatus = async(req: AuthRequest) => {
 
     switch (section) {
         case 'social':
-            updatedRecord = await updateSocialTrek({ ...payload, userId });
+            updatedRecord = await updateSocialTrek({ ...payload, userId, telegramId });
             break;
         case 'refer':
-            updatedRecord = await updateReferTrek({ ...payload, userId })
+            updatedRecord = await updateReferTrek({ ...payload, userId, telegramId })
             break;
         case 'league':
-            updatedRecord = await updateLeagueTrek({ ...payload, userId })
+            updatedRecord = await updateLeagueTrek({ ...payload, userId, telegramId })
             break;
         default:
             break;

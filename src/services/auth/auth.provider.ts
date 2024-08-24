@@ -64,8 +64,11 @@ export const generateToken = async(req:Request) => {
   try {
     const { telegramId } :any = req.body;
     let checkAvlUser = await User.findOne({ where : { telegramId}});
+
+
     if(checkAvlUser) {
-      const jsonToken = await createJsonWebToken({userId : checkAvlUser?.id,telegramId })
+      const jsonToken = await createJsonWebToken({userId : checkAvlUser?.id,telegramId });
+      await updateLeagueLevel(telegramId);
 
       return GenResObj(Code.CREATED, true, "Token generated successfully", jsonToken);
     }
