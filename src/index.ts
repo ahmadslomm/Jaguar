@@ -73,7 +73,7 @@ app.use('/api/v1/health', (req, res) => {
 
 // Optionally, you can handle errors and database connection
 sequelize.authenticate().then(async() => {
-    await sequelize.sync({ alter : true});
+    await sequelize.sync();
     console.log("Database connected successfully");
     app.listen(port, () => {
         try {

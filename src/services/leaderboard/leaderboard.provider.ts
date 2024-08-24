@@ -65,6 +65,7 @@ export const getLederBoardInfo = async (req: AuthRequest) => {
         level: info?.status || "Unknown",
         coins: info.turnOverBalance,
       })).filter((j:any)=>j.name!==null);
+      
 
     const formattedResponse = {
       personalData: {
