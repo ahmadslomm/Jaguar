@@ -303,6 +303,7 @@ export async function getSocialMediaTrekInfo(userId: string | undefined) {
       name: "Follow on Twitter",
       follow: checkAvlSocialMediaTrek?.followTwitter,
       claimed: checkAvlSocialMediaTrek?.followTwitterClaimed,
+      link : process.env.TWITTER_LINK
     },
     // {
     //   type: "JoinTwitter",
@@ -314,6 +315,7 @@ export async function getSocialMediaTrekInfo(userId: string | undefined) {
       name: "Follow on Instagram",
       follow: checkAvlSocialMediaTrek?.followInstagram,
       claimed: checkAvlSocialMediaTrek?.followInstagramClaimed,
+      link: process.env.INSTAGRAME_LINK
     },
     // {
     //   type: "JoinInstagram",
@@ -330,6 +332,7 @@ export async function getSocialMediaTrekInfo(userId: string | undefined) {
       name: "Join YouTube",
       follow: checkAvlSocialMediaTrek?.joinYouTube,
       claimed: checkAvlSocialMediaTrek?.joinYouTubeClaimed,
+      link: process.env.YOUTUBE_LINK
     },
     // {
     //   type: "FollowonTelegram",
@@ -341,6 +344,7 @@ export async function getSocialMediaTrekInfo(userId: string | undefined) {
       name: "Join Telegram",
       follow: checkAvlSocialMediaTrek?.joinTelegram,
       claimed: checkAvlSocialMediaTrek?.joinTelegramClaimed,
+      link: process.env.TELEGRAME_LINK
     },
   ];
 
@@ -350,7 +354,7 @@ export async function getSocialMediaTrekInfo(userId: string | undefined) {
     coin: checkAvlSocialMediaTrek?.amount || 100000,
     follow: task.follow,
     ...(!task.follow &&
-      !task.claimed && { link: process.env.SOCIALMEDIA_LINK }),
+      !task.claimed && { link: task.link }),
     ...(task.follow && { claimed: task.claimed }),
   }));
 }
