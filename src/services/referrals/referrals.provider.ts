@@ -16,14 +16,14 @@ export const getReferralInfo = async (req: AuthRequest) => {
     const { telegramId } = req;
 
     const user = await User.findOne({ where: { telegramId: telegramId }, raw: true });
-    console.log("USer", user);
+    // console.log("USer", user);
     const referralCode = user?.referralCode;
 
     const invitationLink = `${process.env.REFERRAL_URL}?start=${referralCode}`;
 
     const datas = await ReferralClaim.findAll({ where : { referrerId: user?.id } });
 
-    console.log("Getingv datas", datas)
+    // console.log("Getingv datas", datas)
 
     const referralClaims:any = await ReferralClaim.findAll({
       where: { referrerId: user?.id },
@@ -57,7 +57,7 @@ export const getReferralInfo = async (req: AuthRequest) => {
 
     let totalCoin = 0;
 
-    console.log("referralClaims *********************", referralClaims)
+    // console.log("referralClaims *********************", referralClaims)
 
     const formattedReferralClaims = referralClaims.map((referralClaim: any) => {
       // console.dir(referralClaim.referredUser.userTokenInfos[0], { depth : null} );

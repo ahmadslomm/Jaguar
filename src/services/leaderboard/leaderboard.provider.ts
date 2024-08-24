@@ -61,10 +61,10 @@ export const getLederBoardInfo = async (req: AuthRequest) => {
     const teamData = topUserTokenInfos
       // .filter((info:any) => info.userId !== user?.id)
       .map((info: any) => ({
-        name: `${info?.firstName}${info?.lastName}`,
+        name: `${!!info?.firstName ? info?.firstName : ""}${!!info?.lastName ? info?.lastName:""}`,
         level: info?.status || "Unknown",
         coins: info.turnOverBalance,
-      }));
+      })).filter((j:any)=>j.name!==null);
 
     const formattedResponse = {
       personalData: {
