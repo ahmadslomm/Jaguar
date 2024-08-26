@@ -69,7 +69,7 @@ export const getLederBoardInfo = async (req: AuthRequest) => {
 
     const formattedResponse = {
       personalData: {
-        name: `${user?.firstName}${user?.lastName}`,
+        name: `${!!user?.firstName? user?.firstName : ""}${!!user?.lastName ? user?.lastName: ""}`,
         level: checkAvlUserTokenInfo?.status,
         coins: checkAvlUserTokenInfo?.turnOverBalance,
       },

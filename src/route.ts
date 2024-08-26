@@ -9,7 +9,8 @@ import HomeRoute from './services/home/home.route';
 import BoosterRoute from './services/booster/booster.route';
 import ReferralRoute from './services/referrals/referrals.route';
 import LeaderboardRoute from './services/leaderboard/leaderboard.router';
-import TaskRoute from './services/task/task.route'
+import TaskRoute from './services/task/task.route';
+import Stats from './services/stats/stats.route';
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use('/booster', BoosterRoute);
 router.use('/referral',ReferralRoute);
 router.use('/leaderboard', LeaderboardRoute);
 router.use('/task', TaskRoute);
+router.use('/stats', Stats);
 
 export default router;
