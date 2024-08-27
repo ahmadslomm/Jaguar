@@ -1,6 +1,7 @@
 import { TUser } from '../utils/Types';
-import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, CreatedAt, UpdatedAt, BeforeCreate, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, CreatedAt, UpdatedAt, BeforeCreate, HasMany, HasOne } from 'sequelize-typescript';
 import { UserTokenInfo } from './userTokenInfo.schema';
+import { UserFlipTokenInfo } from './userFlipTokenInfo.schema';
 
 
 
@@ -36,6 +37,9 @@ import { UserTokenInfo } from './userTokenInfo.schema';
 
       @HasMany(() => UserTokenInfo, 'userId')
       userTokenInfos!: UserTokenInfo[];
+
+      @HasOne(() => UserFlipTokenInfo)
+      userFlipTokenInfo!: UserFlipTokenInfo
 
 //       @BeforeCreate
 //   static generateReferralCode(instance: User) {

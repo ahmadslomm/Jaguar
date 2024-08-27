@@ -11,6 +11,7 @@ import ReferralRoute from './services/referrals/referrals.route';
 import LeaderboardRoute from './services/leaderboard/leaderboard.router';
 import TaskRoute from './services/task/task.route';
 import Stats from './services/stats/stats.route';
+import FlipTokenRoute from './services/flip-coin/flip-coin.route'
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.use('/referral',ReferralRoute);
 router.use('/leaderboard', LeaderboardRoute);
 router.use('/task', TaskRoute);
 router.use('/stats', Stats);
+router.use('/fliptoken', FlipTokenRoute)
 
 export default router;

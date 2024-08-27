@@ -2,6 +2,7 @@ import { User } from "../schema/user.schema";
 import LevelInfo from "../schema/levelInfo.schema";
 import { StatusInfo } from "../schema/statusInfo.schema";
 import { UserTokenInfo } from "../schema/userTokenInfo.schema";
+import { UserFlipTokenInfo } from "../schema/userFlipTokenInfo.schema";
 import { MultiTapLevel } from "../schema/multiTapLevel.schema";
 import { EnergyTankLevel } from "../schema/energyTankLevel.schema";
 import { EnergyChargingLevel } from "../schema/energyChargingLevel.schema";
@@ -136,13 +137,18 @@ export const createUser = async (userInfo: TUserModel) => {
       const userTOkenInfoCreated = await UserTokenInfo.create(
         createUserTokenInfoData
       );
+
       const socialMediaTrek = await SocialMediaTrek.create({
         userId: createdUser?.id,
       });
+
       const referralTrek = await ReferralTrek.create({
         userId: createdUser.id,
       });
+
       const leagueTrek = await LeagueTrek.create({ userId: createdUser.id });
+
+      const userFlipTokenInformation = await UserFlipTokenInfo.create({ userId: createdUser.id });
     }
   } catch (error) {
     console.error(

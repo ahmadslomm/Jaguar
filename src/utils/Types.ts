@@ -187,3 +187,10 @@ export type TLeagueTrek = {
     claimedForExpert?: boolean;
     amountForExpert?: number;
 };
+
+// *********** User Flip Token Info *********** //
+export type TUserFlipTokenInfp = {
+    id? : string;
+    userId?: string;
+    currentFlipTokens?: number;
+}

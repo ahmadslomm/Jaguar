@@ -11,6 +11,7 @@ import { ReferralClaim } from './schema/referralClaim.schema';
 import { SocialMediaTrek } from './schema/socialMediaTrek.schema';
 import { ReferralTrek } from './schema/referralTrek.schema';
 import { LeagueTrek } from './schema/leagueTrek.schema';
+import { UserFlipTokenInfo } from './schema/userFlipTokenInfo.schema';
 
 
 //MYSQL connection //
@@ -31,6 +32,7 @@ export const sequelize = new Sequelize({
     models: [User,LeagueTrek ,ReferralTrek,SocialMediaTrek, ReferralClaim, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
     logging: false, // Disable logging; set to console.log to see SQL queries
 });
+
 // export const sequelize = new Sequelize(process.env.VPS_MYSQL_DATABASE!, process.env.VPS_MYSQL_USER!, process.env.VPS_MYSQL_PASSWORD, {
 //     host: '82.112.236.87',
 //     dialect: 'mysql',
@@ -55,7 +57,7 @@ export const sequelize = new Sequelize({
 //     username: process.env.LOCAL_MYSQL_USER,
 //     password: process.env.LOCAL_MYSQL_PASSWORD,
 //     host: process.env.LOCAL_MYSQL_HOST,
-//     models: [User,LeagueTrek ,ReferralTrek ,SocialMediaTrek,ReferralClaim, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
+//     models: [User,UserFlipTokenInfo ,LeagueTrek ,ReferralTrek ,SocialMediaTrek,ReferralClaim, StatusInfo, MultiTapLevel, UserTokenInfo, EnergyTankLevel, EnergyChargingLevel], // Path to models
 //     logging: false, // Disable logging; set to console.log to see SQL queries
 // });
 
