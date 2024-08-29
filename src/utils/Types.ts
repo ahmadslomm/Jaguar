@@ -73,6 +73,7 @@ export type TUserTokenInfo = {
     lastRewardAmount: number;
     dailyChargingBooster : number;
     dailyTappingBoosters : number;
+    dailyGammingLimit : number;
 };
 
 export type TUserTokenInfoModel = TUserTokenInfo & Document & SchemaTimestampsConfig

@@ -69,6 +69,9 @@ export class UserTokenInfo extends Model<TUserTokenInfo> {
   @Column({ type: DataType.INTEGER, defaultValue: 7 })
   dailyTappingBoosters!: number;
 
+  @Column({ type: DataType.INTEGER, defaultValue: 5 })
+  dailyGammingLimit!: number;
+
   @BelongsTo(() => StatusInfo, "statusId")
   statusInfo!: StatusInfo;
 

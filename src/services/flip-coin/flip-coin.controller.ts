@@ -15,5 +15,17 @@ export const FlipCoinController = {
         return;
     },
 
+    getUserTokenInfoForGame : async ( req: Request, res: Response ) => {
+        const { code, data} : TResponse = await FlipCoinProvider.getUserTokenInfoForGame(req);
+        res.status(code).json(data);
+        return;
+    },
+
+    updateUserTokenInfoForGame : async ( req: Request, res: Response ) => {
+        const { code, data} : TResponse = await FlipCoinProvider.updateUserTokenInfoForGame(req);
+        res.status(code).json(data);
+        return;
+    },
+
 
 }

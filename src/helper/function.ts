@@ -211,6 +211,8 @@ export const calculateEnergyTankBalance = async (
         (updateFiled["dailyChargingBooster"] = 7);
       lastUpdateDate !== currentDate &&
         (updateFiled["dailyTappingBoosters"] = 7);
+      lastUpdateDate !== currentDate &&
+        (updateFiled["dailyGammingLimit"] = 5);
 
       // console.log("userTOkenInfooooo", userTokenInfo);
 
@@ -1027,4 +1029,3 @@ export async function updateLeagueLevel(telegramId: string | undefined) {
     { where: { userId: checkAvlUser.id } }
   );
 }
-
