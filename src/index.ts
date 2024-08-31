@@ -98,24 +98,24 @@ if (token) {
         // console.dir(ctx, { depth : null})
     // Define the help message
     const helpMessage = `
-*How to Play Flipcoin ✨️*
+How to Play Flipcoin ✨️
 
-💰 *Tap to Earn*  
+💰 Tap to Earn 
 Simply tap the screen of the coin and watch your coins increase with each tap\.
 
-🎮 *Play Game*  
+🎮 Play Game
 Feeling lucky\? You can gamble up to 50% of your total coins to either double your earnings or lose it all\. Choose your side wisely and see if fortune favors you\!
 
-🔄 *Swap Token*  
+🔄 Swap Token 
 Once you reach a certain level\, you'll unlock the token swap feature\, allowing you to exchange your coins\. This unique feature will be available earlier than in most other projects\, giving you a head start\.
 
-📈 *Level*  
+📈 Level  
 As you accumulate more coins\, your level will increase\, unlocking faster earning opportunities and exclusive features\.
 
-👥 *Invite*  
+👥 Invite  
 Bring your friends into the game and earn bonuses\! When they progress\, you'll gain even more rewards\, making it a win\-win for everyone\.
 
-📢 *Stay Tuned*  
+📢 Stay Tuned  
 More information will be updated as we launch and continue to enhance our app\.
         `;
     const escapedMessage = escapeMarkdownV2(helpMessage);
