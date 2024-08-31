@@ -113,7 +113,7 @@ export const createUser = async (userInfo: TUserModel) => {
       });
 
       //Update the refferel count of the referred user
-      updateRefferelCount(referredByUser?.id, totalCount);
+      await updateRefferelCount(referredByUser?.id, totalCount);
     }
 
     // Create UserTokenInfo if user creation was successful

@@ -77,7 +77,8 @@ if (token) {
     ]);
 
     // Send the welcome message with the keyboard
-    checkuserRegistrationStatus && ctx.reply(welcomeMessage, keyboard);
+    // checkuserRegistrationStatus && ctx.reply(welcomeMessage, keyboard);
+    ctx.reply(welcomeMessage, keyboard);
 
   });
 
