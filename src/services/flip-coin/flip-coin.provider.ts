@@ -112,10 +112,13 @@ export const addUserFlipToken = async (req: AuthRequest) => {
 
     const updateUserTokenInfo = await UserTokenInfo.update({ currentBalance : remainingToken}, { where : { userId : checkAvlUser?.id}});
 
-    console.log("Getting the updated UserTokenInfo", updateUserTokenInfo)
+    console.log("Getting the updated UserTokenInfo", updateUserTokenInfo);
+
+    const checkAvlUserFlipTokenInfo:any = await UserFlipTokenInfo.findOne({ where : { userId : checkAvlUser?.id} })
     
-    const updateUserFlipTokenInfo = await UserFlipTokenInfo.update({ currentFlipTokens : flipTokenToAdd }, { where : { userId : checkAvlUser?.id }});
-    console.log("Getting the updated updateUserFlipTokenInfo", updateUserFlipTokenInfo)
+    await checkAvlUserFlipTokenInfo.increment('currentFlipTokens', { by: flipTokenToAdd });
+    const updateUserFlipTokenInfo = await checkAvlUserFlipTokenInfo.reload();
+    // const updateUserFlipTokenInfo = await UserFlipTokenInfo.update({ currentFlipTokens : flipTokenToAdd }, { where : { userId : checkAvlUser?.id }});
 
     return GenResObj(Code.CREATED, true, 'Flip-token swapped successfully');
     

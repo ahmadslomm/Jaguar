@@ -17,7 +17,8 @@ export const getStatsInfo = async (req : AuthRequest) => {
 
         const resObj = {
             totalFlipCoins : totalTurnOverBalance || 0,
-            redeemedFlipTokens : checkAvlUserTotalTurnOver?.turnOverBalance || 0,
+            // redeemedFlipTokens : checkAvlUserTotalTurnOver?.turnOverBalance || 0,
+            redeemedFlipTokens : 0,
             totalPlayers : totalUserCount || 0,
             dailyActivePlayers : dailyActiveUser || 0,
             totalCoinFlips
