@@ -51,7 +51,7 @@ export const getLederBoardInfo = async (req: AuthRequest) => {
         "statusInfo.status",
       ],
       order: [["turnOverBalance", "DESC"]],
-      // limit: 8,
+      limit: 25,
       raw: true,
       subQuery: false,
     });
