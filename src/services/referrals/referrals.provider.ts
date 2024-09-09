@@ -72,7 +72,7 @@ export const getReferralInfo = async (req: AuthRequest) => {
           totalCoin = totalCoin + referralClaim.referralAmount
 
       return {
-        name : `${firstName} ${lastName} `,
+        name : `${!!firstName? firstName : ""} ${!!lastName ? lastName : ""} `,
         level : status,
         coins : referralClaim.referralAmount,
         // id: referralClaim.id,

@@ -153,7 +153,7 @@ export const getUserTokenInfoForGame = async(req: AuthRequest) => {
       attributes: [[col("statusInfo.status"), "status"], "currentBalance","dailyGammingLimit"],
     });
 
-    const availableBalanceForGame = +checkAvlUserTokenInfo?.currentBalance % 2 != 0 ? (+checkAvlUserTokenInfo?.currentBalance / 2) + 1 : +checkAvlUserTokenInfo?.currentBalance / 2;
+    const availableBalanceForGame = Math.floor(+checkAvlUserTokenInfo?.currentBalance % 2 != 0 ? (+checkAvlUserTokenInfo?.currentBalance / 2) + 1 : +checkAvlUserTokenInfo?.currentBalance / 2);
     const resObj = {
       currentBalance : checkAvlUserTokenInfo?.currentBalance,
       availableBalanceForGame,
