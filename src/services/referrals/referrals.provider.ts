@@ -23,7 +23,9 @@ export const getReferralInfo = async (req: AuthRequest) => {
 
     const datas = await ReferralClaim.findAll({ where : { referrerId: user?.id } });
 
-    // console.log("Getingv datas", datas)
+    // console.log("Getingv datas", datas);
+
+    const getUserTokenInfo:any = await UserTokenInfo.findOne({ where : { userId: user?.id }, attributes : ["tonCoin"], raw : true });
 
     const referralClaims:any = await ReferralClaim.findAll({
       where: { referrerId: user?.id },
@@ -89,6 +91,7 @@ export const getReferralInfo = async (req: AuthRequest) => {
     const formattedResponse = {
       invitationLink,
       teamTotalCoins : totalCoin,
+      totalTonCoin : getUserTokenInfo?.tonCoin,
       team: formattedReferralClaims
     }
 

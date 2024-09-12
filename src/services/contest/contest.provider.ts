@@ -33,7 +33,7 @@ export const getContestUserList = async (req: AuthRequest) => {
       raw: true,
     });
 
-    const topReferrers = await ReferralClaim.findAll({
+    const topReferrers:any = await ReferralClaim.findAll({
       attributes: [
         "referrerId",
         [Sequelize.fn("COUNT", Sequelize.col("referrerId")), "referralCount"],
@@ -48,7 +48,13 @@ export const getContestUserList = async (req: AuthRequest) => {
       group: ["referrerId", "referrer.id"], // Group by referrerId and referrer user fields
       order: [[Sequelize.literal("referralCount"), "DESC"]], // Order by referral count in descending order
       limit: 50, // Limit to the top 50 referrers
+      raw : true
     });
+
+    const rankedReferrers:any = topReferrers.map((referrer:any, index:any) => ({
+        ...referrer,
+        rank: index + 1, // Assign rank based on position in the array (1-based index)
+      }));
 
     const formattedResponse = {
         personalData: {
@@ -57,7 +63,7 @@ export const getContestUserList = async (req: AuthRequest) => {
             coins: checkAvlUserTokenInfo?.turnOverBalance,
             userReferralCount
           },
-          topReferrers
+          topReferrers : rankedReferrers
     }
 
     return GenResObj(

@@ -104,6 +104,10 @@ export const createUser = async (userInfo: TUserModel) => {
           turnOverBalance: literal(
             `turnOverBalance + ${process.env.SIGNUP_REFERRAL_AMOUNT}`
           ),
+
+        tonCoin: literal(
+          `tonCoin + ${process.env.TONCOIN_REFERRAL_AMOUNT}`
+        ),
         },
         { where: { userId: referredByUser?.id } }
       );

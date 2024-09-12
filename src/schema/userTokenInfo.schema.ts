@@ -72,6 +72,13 @@ export class UserTokenInfo extends Model<TUserTokenInfo> {
   @Column({ type: DataType.INTEGER, defaultValue: 5 })
   dailyGammingLimit!: number;
 
+  @Column({
+    type: DataType.DECIMAL(10, 2), // 10 digits total, 2 after the decimal point
+    allowNull: false,
+    defaultValue: 0.00,
+  })
+  tonCoin!: number;
+
   @BelongsTo(() => StatusInfo, "statusId")
   statusInfo!: StatusInfo;
 
