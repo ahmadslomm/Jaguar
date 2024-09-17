@@ -93,6 +93,7 @@ export const createUser = async (userInfo: TUserModel) => {
         referredUserId: createdUser.id,
         claimed: true,
         referralAmount: process.env.SIGNUP_REFERRAL_AMOUNT,
+        referralTonCoinAmount: process.env.TONCOIN_REFERRAL_AMOUNT,
         referralStatus: "CLAIMED",
       });
 

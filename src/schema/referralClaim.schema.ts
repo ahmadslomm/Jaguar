@@ -23,6 +23,12 @@ export class ReferralClaim extends Model {
   @Column({ type: DataType.INTEGER, allowNull: false })
   declare referralAmount?: number;
 
+  @Column({
+    type: DataType.DECIMAL(10, 2), // 10 digits total, 2 after the decimal point
+    allowNull: false,
+    defaultValue: 0.00,
+  })
+  declare referralTonCoinAmount?: number;
   // Status referralStatus enum: PENDING | CLAIMED
   @Column({ type: DataType.STRING })
   declare referralStatus?: string;

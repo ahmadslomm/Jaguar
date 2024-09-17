@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { AuthRequest } from "./../../middleware/authentication/jsonToken";
 import { User } from "../../schema/user.schema";
 import { UserTokenInfo } from "../../schema/userTokenInfo.schema";
-import { col, literal, Sequelize } from "sequelize";
+import { col, fn, literal, Sequelize } from "sequelize";
 import { ReferralClaim } from "../../schema/referralClaim.schema";
 import { HttpStatusCodes as Code } from "../../utils/Enum";
 import { GenResObj } from "../../utils/ResponseFormat";
@@ -56,12 +56,30 @@ export const getContestUserList = async (req: AuthRequest) => {
         rank: index + 1, // Assign rank based on position in the array (1-based index)
       }));
 
+      // Get the count of referrals for all users
+    const referralCounts:any = await ReferralClaim.findAll({
+      attributes: [
+        "referrerId",
+        [fn("COUNT", col("referrerId")), "referralCount"],
+      ],
+      group: ["referrerId"],
+      raw: true,
+    });
+
+    // Sort users by referral count in descending order
+    referralCounts.sort((a: any, b: any) => b.referralCount - a.referralCount);
+
+    // Find the rank of the current user
+    const userRank = referralCounts.findIndex((r: any) => r.referrerId === user?.id) + 1;
+
+
     const formattedResponse = {
         personalData: {
             name: `${!!user?.firstName? user?.firstName : ""}${!!user?.lastName ? user?.lastName: ""}`,
             level: checkAvlUserTokenInfo?.status,
             coins: checkAvlUserTokenInfo?.turnOverBalance,
-            userReferralCount
+            userReferralCount,
+            userRank
           },
           topReferrers : rankedReferrers
     }

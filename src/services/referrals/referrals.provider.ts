@@ -8,7 +8,7 @@ import { HttpStatusCodes as Code } from "../../utils/Enum";
 import { GenResObj } from "../../utils/ResponseFormat";
 import { calculateEnergyTankBalance } from "../../helper/function";
 import { Types } from "mongoose";
-import { literal } from "sequelize";
+import { cast, col, fn, literal } from "sequelize";
 import { ReferralClaim } from "../../schema/referralClaim.schema";
 
 export const getReferralInfo = async (req: AuthRequest) => {
@@ -51,7 +51,9 @@ export const getReferralInfo = async (req: AuthRequest) => {
        attributes: [
         "id", 
         "referralAmount", 
-        "claimed"
+        "claimed",
+        "referralTonCoinAmount",
+        [cast(col('referralTonCoinAmount'), 'DECIMAL'), 'referralTonCoinAmount2']
       ],
       raw : true,
       nest : true
@@ -76,18 +78,12 @@ export const getReferralInfo = async (req: AuthRequest) => {
       return {
         name : `${!!firstName? firstName : ""} ${!!lastName ? lastName : ""} `,
         level : status,
-        coins : referralClaim.referralAmount,
-        // id: referralClaim.id,
-        // referralAmount: referralClaim.referralAmount,
-        // claimed: referralClaim.claimed,
-        // referredUser: {
-        //   firstName,
-        //   lastName,
-        //   status,
-        // },
+        coins : referralClaim?.referralAmount,
+        tonCoin : referralClaim?.referralTonCoinAmount,
       };
     });
 
+    
     const formattedResponse = {
       invitationLink,
       teamTotalCoins : totalCoin,
