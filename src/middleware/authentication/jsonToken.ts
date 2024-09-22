@@ -33,13 +33,16 @@ export const authCheck = () => {
 
       const origin = req.headers["origin"] || req.headers["referer"];
       console.log("Getting the originnnnnnnnnnnnnnnnnn", origin);
-    //   if (!origin || !allowedOrigins.includes(origin)) {
-    //     return res.status(Code.FORBIDDEN).json({
-    //       success: false,
-    //       message: "Forbidden: Invalid request origin",
-    //       data: null,
-    //     });
-    //   }
+      if (!origin || !allowedOrigins.includes(origin)) {
+        console.log("Forbidden: Invalid request origin")
+        // return res.status(Code.FORBIDDEN).json({
+        //   success: false,
+        //   message: "Forbidden: Invalid request origin",
+        //   data: null,
+        // });
+      }else {
+        console.log("Valid Request : chck the orgin ")
+      }
 
       let jwtToken;
 
