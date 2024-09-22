@@ -53,6 +53,9 @@ export const getContestUserList = async (req: AuthRequest) => {
 
     const rankedReferrers:any = topReferrers.map((referrer:any, index:any) => ({
         ...referrer,
+        test: referrer["referrer.lastName"],
+        firstName : !!referrer["referrer.firstName"] ? referrer["referrer.firstName"] : "",
+        lastName : !!referrer["referrer.lastName"] ? referrer["referrer.lastName"] : "",
         rank: index + 1, // Assign rank based on position in the array (1-based index)
       }));
 
