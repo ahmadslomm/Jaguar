@@ -115,7 +115,8 @@ More information will be updated as we launch and continue to enhance our app\.
   });
 
   bot.launch();
-}
+};
+
 if (tokenForTestingBoat) {
   const URL = process.env.VERCEL_APP_URL;
   const bot = new Telegraf(tokenForTestingBoat);
@@ -213,9 +214,18 @@ More information will be updated as we launch and continue to enhance our app\.
   });
 
   bot.launch();
-}
+};
 
-app.use(cors());
+const corsOptions = {
+  origin: [
+    'https://frontend.flipcoingame.xyz',
+    'https://coin-mining.vercel.app'
+  ],
+  methods: ['GET', 'POST', 'DELETE', 'PATCH'], // Restrict methods
+};
+
+
+app.use(cors(corsOptions)); 
 app.use(express.json());
 app.use("/api/v1", Route);
 app.use("/api/v1/health", (req, res) => {
