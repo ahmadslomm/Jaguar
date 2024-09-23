@@ -216,17 +216,18 @@ More information will be updated as we launch and continue to enhance our app\.
   bot.launch();
 };
 
-const corsOptions = {
-  origin: [
-    'https://frontend.flipcoingame.xyz',
-    'https://coin-mining.vercel.app',
-    'http://localhost:3001'
-  ],
-  methods: ['GET', 'POST', 'DELETE', 'PATCH'], // Restrict methods
-};
+// const corsOptions = {
+//   origin: [
+//     'https://frontend.flipcoingame.xyz',
+//     'https://coin-mining.vercel.app',
+//     'http://localhost:3001'
+//   ],
+//   methods: ['GET', 'POST', 'DELETE', 'PATCH'], // Restrict methods
+// };
 
 
-app.use(cors(corsOptions)); 
+// app.use(cors(corsOptions)); 
+app.use(cors()); 
 app.use(express.json());
 app.use("/api/v1", Route);
 app.use("/api/v1/health", (req, res) => {
