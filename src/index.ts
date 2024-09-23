@@ -219,7 +219,8 @@ More information will be updated as we launch and continue to enhance our app\.
 const corsOptions = {
   origin: [
     'https://frontend.flipcoingame.xyz',
-    'https://coin-mining.vercel.app'
+    'https://coin-mining.vercel.app',
+    'http://localhost:3001'
   ],
   methods: ['GET', 'POST', 'DELETE', 'PATCH'], // Restrict methods
 };
