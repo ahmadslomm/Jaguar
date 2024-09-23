@@ -13,6 +13,7 @@ export interface AuthRequest extends Request {
 const allowedOrigins = [
   "https://frontend.flipcoingame.xyz",
   "https://coin-mining.vercel.app",
+  "http://192.168.140.14:3001"
 ];
 
 const checkOrigin = (req: Request, res: Response) => {
